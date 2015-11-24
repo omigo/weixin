@@ -7,14 +7,6 @@ import (
 	"github.com/omigo/weixin"
 )
 
-const (
-	originId       = "gh_××××××××××"
-	appId          = "wx****************"
-	appSecret      = "*******************************"
-	token          = "*******************************"
-	encodingAESKey = "*******************************************"
-)
-
 func main() {
 	addr := ":3080"
 
