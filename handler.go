@@ -1,72 +1,63 @@
 package weixin
 
-import (
-	"encoding/xml"
-	"io/ioutil"
-	"net/http"
-
-	"github.com/omigo/log"
-)
-
-// HandleMessage 处理所有来自微信的消息
-func HandleMessage(w http.ResponseWriter, r *http.Request) {
-	// 读取报文
-	body, err := ioutil.ReadAll(r.Body)
-	if err != nil {
-		log.Error(err)
-		http.Error(w, "read body error", http.StatusNotAcceptable)
-		return
-	}
-	log.Debugf("receive: %s", body)
-
-	// 解析 xml
-	msg := &Message{}
-	err = xml.Unmarshal(body, msg)
-	if err != nil {
-		log.Error(err)
-		http.Error(w, "unmarshal xml error", http.StatusBadRequest)
-		return
-	}
-
-	// 处理消息
-	reply := processMessage(msg)
-
-	// 如果返回为 nil，表示不需要回复，结束
-	if reply == nil {
-		return
-	}
-
-	// 如果返回不为 nil，表示需要回复
-	rbody, err := xml.MarshalIndent(reply, "", "  ")
-	if err != nil {
-		log.Error(err)
-		http.Error(w, "system error", http.StatusInternalServerError)
-		return
-	}
-
-	log.Debugf("replay: %s", rbody)
-	w.Write(rbody)
-}
+import "github.com/omigo/log"
 
 // MessageHandler 处理各类消息
-type MessageHandler func(*Message) *Message
+type MessageHandler func(*Message) interface{}
 
-// handlers 注册各类消息的处理器
-var handlers = make(map[MsgType]MessageHandler)
+// Handlers 各类消息处理器
+var (
+	MsgTextHandler     func(*MsgText) interface{}
+	MsgImageHandler    func(*MsgImage) interface{}
+	MsgVoiceHandler    func(*MsgVoice) interface{}
+	MsgVideoHandler    func(*MsgVideo) interface{}
+	MsgLocationHandler func(*MsgLocation) interface{}
+	MsgLinkHandler     func(*MsgLink) interface{}
+)
 
-// Register 注册一个消息处理器
-func Register(msgType MsgType, handler MessageHandler) {
-	handlers[msgType] = handler
-}
+func processMessage(msg *Message) (ret interface{}) {
+	log.Debugf("process %s message", msg.MsgType)
 
-func processMessage(msg *Message) (ret *Message) {
-	h, ok := handlers[msg.MsgType]
-	if !ok {
-		log.Warnf("unregister MsgType: %s", msg.MsgType)
-		return nil
+	switch msg.MsgType {
+	case MsgTypeText:
+		if MsgTextHandler == nil {
+			log.Warnf("unregister MsgType: %s", msg.MsgType)
+			return nil
+		}
+		ret = MsgTextHandler(msg.MsgText())
+	case MsgTypeImage:
+		if MsgImageHandler == nil {
+			log.Warnf("unregister MsgType: %s", msg.MsgType)
+			return nil
+		}
+		ret = MsgImageHandler(msg.MsgImage())
+	case MsgTypeVoice:
+		if MsgVoiceHandler == nil {
+			log.Warnf("unregister MsgType: %s", msg.MsgType)
+			return nil
+		}
+		ret = MsgVoiceHandler(msg.MsgVoice())
+	case MsgTypeVideo, MsgTypeShortVideo:
+		if MsgVideoHandler == nil {
+			log.Warnf("unregister MsgType: %s", msg.MsgType)
+			return nil
+		}
+		ret = MsgVideoHandler(msg.MsgVideo())
+	case MsgTypeLocation:
+		if MsgLocationHandler == nil {
+			log.Warnf("unregister MsgType: %s", msg.MsgType)
+			return nil
+		}
+		ret = MsgLocationHandler(msg.MsgLocation())
+	case MsgTypeLink:
+		if MsgLinkHandler == nil {
+			log.Warnf("unregister MsgType: %s", msg.MsgType)
+			return nil
+		}
+		ret = MsgLinkHandler(msg.MsgLink())
+	default:
+		log.Warnf("unexpected MsgType: %s", msg.MsgType)
 	}
-
-	ret = h(msg)
 
 	return ret
 }
