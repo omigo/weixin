@@ -7,12 +7,13 @@ type MessageHandler func(*Message) interface{}
 
 // Handlers 各类消息处理器
 var (
-	MsgTextHandler     func(*MsgText) interface{}
-	MsgImageHandler    func(*MsgImage) interface{}
-	MsgVoiceHandler    func(*MsgVoice) interface{}
-	MsgVideoHandler    func(*MsgVideo) interface{}
-	MsgLocationHandler func(*MsgLocation) interface{}
-	MsgLinkHandler     func(*MsgLink) interface{}
+	MsgTextHandler       func(*MsgText) interface{}
+	MsgImageHandler      func(*MsgImage) interface{}
+	MsgVoiceHandler      func(*MsgVoice) interface{}
+	MsgVideoHandler      func(*MsgVideo) interface{}
+	MsgShortVideoHandler func(*MsgVideo) interface{}
+	MsgLocationHandler   func(*MsgLocation) interface{}
+	MsgLinkHandler       func(*MsgLink) interface{}
 )
 
 func processMessage(msg *Message) (ret interface{}) {
@@ -37,12 +38,18 @@ func processMessage(msg *Message) (ret interface{}) {
 			return nil
 		}
 		ret = MsgVoiceHandler(msg.MsgVoice())
-	case MsgTypeVideo, MsgTypeShortVideo:
+	case MsgTypeVideo:
 		if MsgVideoHandler == nil {
 			log.Warnf("unregister MsgType: %s", msg.MsgType)
 			return nil
 		}
 		ret = MsgVideoHandler(msg.MsgVideo())
+	case MsgTypeShortVideo:
+		if MsgShortVideoHandler == nil {
+			log.Warnf("unregister MsgType: %s", msg.MsgType)
+			return nil
+		}
+		ret = MsgShortVideoHandler(msg.MsgVideo())
 	case MsgTypeLocation:
 		if MsgLocationHandler == nil {
 			log.Warnf("unregister MsgType: %s", msg.MsgType)
