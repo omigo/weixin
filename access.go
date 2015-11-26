@@ -21,7 +21,7 @@ func HandleAccess(w http.ResponseWriter, r *http.Request) {
 	nonce := q.Get("nonce")
 
 	// 每次都验证 URL，以判断来源是否合法
-	if !validateURL(config.token, timestamp, nonce, signature) {
+	if !validateURL(Token, timestamp, nonce, signature) {
 		http.Error(w, "validate url error, request not from weixin?", http.StatusUnauthorized)
 		return
 	}
