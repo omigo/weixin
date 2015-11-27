@@ -114,9 +114,17 @@ func echoMsgShortVideo(m *weixin.MsgVideo) interface{} {
 func echoMsgLocation(m *weixin.MsgLocation) interface{} {
 	log.Debugf("%+v", m)
 
-	// 回复音乐消息
+	// echo message
+	ret := &weixin.ReplyText{
+		MsgType:      weixin.MsgTypeText,
+		ToUserName:   m.FromUserName,
+		FromUserName: m.ToUserName,
+		CreateTime:   m.CreateTime,
+		Content:      weixin.AccessToken(),
+	}
 
-	return nil
+	log.Debugf("replay message: %+v", ret)
+	return ret
 }
 
 func echoMsgLink(m *weixin.MsgLink) interface{} {

@@ -49,6 +49,7 @@ func HandleMessage(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "read body error", http.StatusNotAcceptable)
 		return
 	}
+	r.Body.Close()
 	log.Debugf("from weixin: %s", body)
 
 	msg, err := parseBody(encryptType, timestamp, nonce, msgSignature, body)
