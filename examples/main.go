@@ -27,7 +27,7 @@ func main() {
 }
 
 func echoMsgText(m *weixin.MsgText) interface{} {
-	log.Debugf("%+v", m)
+	log.Debugf("receive message: %+v", m)
 
 	// echo message
 	ret := &weixin.ReplyText{
@@ -38,7 +38,7 @@ func echoMsgText(m *weixin.MsgText) interface{} {
 		Content:      m.Content,
 	}
 
-	log.Debugf("%+v", ret)
+	log.Debugf("replay message: %+v", ret)
 	return ret
 }
 

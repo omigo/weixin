@@ -1,13 +1,10 @@
 package weixin
 
 import (
-	"crypto/sha1"
 	"encoding/xml"
-	"fmt"
+	"errors"
 	"io/ioutil"
 	"net/http"
-	"sort"
-	"strings"
 )
 import "github.com/omigo/log"
 
@@ -21,7 +18,7 @@ func HandleAccess(w http.ResponseWriter, r *http.Request) {
 	nonce := q.Get("nonce")
 
 	// 每次都验证 URL，以判断来源是否合法
-	if !validateURL(Token, timestamp, nonce, signature) {
+	if !ValidateURL(Token, timestamp, nonce, signature) {
 		http.Error(w, "validate url error, request not from weixin?", http.StatusUnauthorized)
 		return
 	}
@@ -37,19 +34,14 @@ func HandleAccess(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func validateURL(token, timestamp, nonce, signature string) bool {
-	tmpArr := []string{token, timestamp, nonce}
-	sort.Strings(tmpArr)
-
-	tmpStr := strings.Join(tmpArr, "")
-	actual := fmt.Sprintf("%x", sha1.Sum([]byte(tmpStr)))
-
-	log.Tracef("%s %s", tmpArr, actual)
-	return actual == signature
-}
-
-// HandleMessage 处理所有来自微信的消息
+// HandleMessage 处理所有来自微信的消息，已经验证过 URL 和 Method 了
 func HandleMessage(w http.ResponseWriter, r *http.Request) {
+	q := r.URL.Query()
+	timestamp := q.Get("timestamp")
+	nonce := q.Get("nonce")
+	encryptType := q.Get("encrypt_type")
+	msgSignature := q.Get("msg_signature")
+
 	// 读取报文
 	body, err := ioutil.ReadAll(r.Body)
 	if err != nil {
@@ -57,14 +49,12 @@ func HandleMessage(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "read body error", http.StatusNotAcceptable)
 		return
 	}
-	log.Debugf("receive: %s", body)
+	log.Debugf("from weixin: %s", body)
 
-	// 解析 xml
-	msg := &Message{}
-	err = xml.Unmarshal(body, msg)
+	msg, err := parseBody(encryptType, timestamp, nonce, msgSignature, body)
 	if err != nil {
 		log.Error(err)
-		http.Error(w, "unmarshal xml error", http.StatusBadRequest)
+		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 
@@ -77,13 +67,74 @@ func HandleMessage(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// 如果返回不为 nil，表示需要回复
-	rbody, err := xml.MarshalIndent(reply, "", "  ")
+	ret, err := packReply(reply, encryptType, timestamp, nonce)
 	if err != nil {
 		log.Error(err)
-		http.Error(w, "system error", http.StatusInternalServerError)
+		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 
-	log.Debugf("replay: %s", rbody)
-	w.Write(rbody)
+	log.Debugf("to weixin: %s", ret)
+	w.Header().Set("Content-Type", "text/xml; charset=utf-8")
+	w.Write(ret)
+}
+
+func parseBody(encryptType, timestamp, nonce, msgSignature string, body []byte) (msg *Message, err error) {
+	msg = &Message{}
+	// 如果报文被加密了，先要验签解密
+	if encryptType == "aes" {
+		encMsg := &EncMessage{}
+		// 解析加密的 xml
+		err = xml.Unmarshal(body, encMsg)
+		if err != nil {
+			return nil, err
+		}
+		msg.ToUserName = encMsg.ToUserName
+		msg.Encrypt = encMsg.Encrypt
+
+		if !CheckSignature(Token, timestamp, nonce, encMsg.Encrypt, msgSignature) {
+			return nil, errors.New("check signature error")
+		}
+
+		body, err = DecryptMsg(encMsg.Encrypt, EncodingAESKey, AppId)
+		if err != nil {
+			return nil, err
+		}
+		log.Debugf("receive: %s", body)
+	}
+
+	// 解析 xml
+	err = xml.Unmarshal(body, msg)
+	if err != nil {
+		return nil, err
+	}
+
+	return msg, nil
+}
+
+func packReply(reply interface{}, encryptType, timestamp, nonce string) (ret []byte, err error) {
+	ret, err = xml.MarshalIndent(reply, "", "  ")
+	if err != nil {
+		return nil, err
+	}
+	log.Debugf("replay: %s", ret)
+
+	// 如果接收的消息加密了，那么回复的消息也需要签名加密
+	if encryptType == "aes" {
+		b64Enc, err := EncryptMsg(ret, EncodingAESKey, AppId)
+		if err != nil {
+			return nil, err
+		}
+		encMsg := EncMessage{
+			Encrypt:      b64Enc,
+			MsgSignature: Signature(Token, timestamp, nonce, b64Enc),
+			TimeStamp:    timestamp,
+			Nonce:        nonce, // 随机数
+		}
+		ret, err = xml.MarshalIndent(encMsg, "", "    ")
+		if err != nil {
+			return nil, err
+		}
+	}
+	return ret, nil
 }

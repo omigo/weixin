@@ -17,7 +17,7 @@ var (
 )
 
 func processMessage(msg *Message) (ret interface{}) {
-	log.Debugf("process %s message", msg.MsgType)
+	log.Debugf("process `%s` message", msg.MsgType)
 
 	switch msg.MsgType {
 	case MsgTypeText:
