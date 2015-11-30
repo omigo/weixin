@@ -16,6 +16,7 @@ const (
 	MsgTypeLink       MsgType = "link"       // 链接消息
 	MsgTypeMusic      MsgType = "music"      // 音乐消息
 	MsgTypeNews       MsgType = "news"       // 图文消息
+	MsgTypeWXCard     MsgType = "wxcard"     // 卡券，客服消息时使用
 )
 
 // EncMessage 加密消息体

@@ -22,43 +22,43 @@ func processMessage(msg *Message) (ret interface{}) {
 	switch msg.MsgType {
 	case MsgTypeText:
 		if MsgTextHandler == nil {
-			log.Warnf("unregister MsgType: %s", msg.MsgType)
+			log.Warnf("unregister MsgTextHandler: %s", msg.MsgType)
 			return nil
 		}
 		ret = MsgTextHandler(msg.MsgText())
 	case MsgTypeImage:
 		if MsgImageHandler == nil {
-			log.Warnf("unregister MsgType: %s", msg.MsgType)
+			log.Warnf("unregister MsgImageHandler: %s", msg.MsgType)
 			return nil
 		}
 		ret = MsgImageHandler(msg.MsgImage())
 	case MsgTypeVoice:
 		if MsgVoiceHandler == nil {
-			log.Warnf("unregister MsgType: %s", msg.MsgType)
+			log.Warnf("unregister MsgVoiceHandler: %s", msg.MsgType)
 			return nil
 		}
 		ret = MsgVoiceHandler(msg.MsgVoice())
 	case MsgTypeVideo:
 		if MsgVideoHandler == nil {
-			log.Warnf("unregister MsgType: %s", msg.MsgType)
+			log.Warnf("unregister MsgVideoHandler: %s", msg.MsgType)
 			return nil
 		}
 		ret = MsgVideoHandler(msg.MsgVideo())
 	case MsgTypeShortVideo:
 		if MsgShortVideoHandler == nil {
-			log.Warnf("unregister MsgType: %s", msg.MsgType)
+			log.Warnf("unregister MsgShortVideoHandler: %s", msg.MsgType)
 			return nil
 		}
 		ret = MsgShortVideoHandler(msg.MsgVideo())
 	case MsgTypeLocation:
 		if MsgLocationHandler == nil {
-			log.Warnf("unregister MsgType: %s", msg.MsgType)
+			log.Warnf("unregister MsgLocationHandler: %s", msg.MsgType)
 			return nil
 		}
 		ret = MsgLocationHandler(msg.MsgLocation())
 	case MsgTypeLink:
 		if MsgLinkHandler == nil {
-			log.Warnf("unregister MsgType: %s", msg.MsgType)
+			log.Warnf("unregister MsgLinkHandler: %s", msg.MsgType)
 			return nil
 		}
 		ret = MsgLinkHandler(msg.MsgLink())

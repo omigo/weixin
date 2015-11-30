@@ -4,6 +4,7 @@ import (
 	"encoding/base64"
 	"os"
 	"regexp"
+	"time"
 
 	"github.com/omigo/log"
 )
@@ -49,4 +50,5 @@ func Initialize(originId, appId, appSecret, token, encodingAESKey string) {
 
 	// refresh access token
 	RefreshAccessToken(AppId, AppSecret)
+	time.Sleep(1 * time.Second) // waiting to refresh token
 }

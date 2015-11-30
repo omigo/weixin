@@ -35,7 +35,7 @@ func echoMsgText(m *weixin.MsgText) interface{} {
 		ToUserName:   m.FromUserName,
 		FromUserName: m.ToUserName,
 		CreateTime:   m.CreateTime,
-		Content:      m.Content,
+		Content:      m.FromUserName + ", " + m.Content,
 	}
 
 	log.Debugf("replay message: %+v", ret)
