@@ -1,19 +1,123 @@
 package weixin
 
 import (
-	"bytes"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"net/http"
-
-	"github.com/omigo/log"
+	"os"
 )
 
+// 客服消息接口
 const (
-	customAddURL = "https://api.weixin.qq.com/customservice/kfaccount/add?access_token=%s"
-	customMsgURL = "https://api.weixin.qq.com/cgi-bin/message/custom/send?access_token=%s"
+	CustomAddURL    = "https://api.weixin.qq.com/customservice/kfaccount/add?access_token=%s"
+	CustomUpdateURL = "https://api.weixin.qq.com/customservice/kfaccount/update?access_token=%s"
+	CustomDeleteURL = "https://api.weixin.qq.com/customservice/kfaccount/del?access_token=%s"
+	// 设置客服帐号的头像
+	CustomHeadingURL = "http://api.weixin.qq.com/customservice/kfaccount/uploadheadimg?access_token=%s&kf_account=%s"
+	CustomListURL    = "https://api.weixin.qq.com/cgi-bin/customservice/getkflist?access_token=%s"
+	CustomMsgURL     = "https://api.weixin.qq.com/cgi-bin/message/custom/send?access_token=%s"
 )
+
+// Custom 客服帐号
+type Custom struct {
+	Account  string `json:"kf_account"`
+	NickName string `json:"nickname"`
+	Password string `json:"password"`
+}
+
+// AddCustom 添加客服帐号
+func AddCustom(account, nickname, password string) (err error) {
+	url := fmt.Sprintf(CustomAddURL, AccessToken())
+	return operateCustomStruct(url, &Custom{account, nickname, password})
+}
+
+// UpdateCustom 修改客服帐号
+func UpdateCustom(account, nickname, password string) (err error) {
+	url := fmt.Sprintf(CustomUpdateURL, AccessToken())
+	return operateCustomStruct(url, &Custom{account, nickname, password})
+}
+
+// DeleteCustom 删除客服帐号
+func DeleteCustom(account, nickname, password string) (err error) {
+	url := fmt.Sprintf(CustomDeleteURL, AccessToken())
+	return operateCustomStruct(url, &Custom{account, nickname, password})
+}
+
+// AddCustomStruct 添加客服帐号
+func AddCustomStruct(cust *Custom) (err error) {
+	url := fmt.Sprintf(CustomAddURL, AccessToken())
+	return operateCustomStruct(url, cust)
+}
+
+// UpdateCustomStruct 修改客服帐号
+func UpdateCustomStruct(cust *Custom) (err error) {
+	url := fmt.Sprintf(CustomAddURL, AccessToken())
+	return operateCustomStruct(url, cust)
+}
+
+// DeleteCustomStruct 删除客服帐号
+func DeleteCustomStruct(cust *Custom) (err error) {
+	url := fmt.Sprintf(CustomDeleteURL, AccessToken())
+	return operateCustomStruct(url, cust)
+}
+
+// operateCustomStruct 客服帐号
+func operateCustomStruct(url string, cust *Custom) (err error) {
+	jsonBytes, err := json.Marshal(cust)
+	if err != nil {
+		return err
+	}
+
+	err = Post(url, jsonBytes)
+	return err
+}
+
+// UploadHeading 设置客服帐号的头像
+func UploadHeading(account string, file *os.File) (err error) {
+	url := fmt.Sprintf(CustomHeadingURL, AccessToken(), account)
+	return Upload(url, file)
+}
+
+// CustomList 客服列表
+type CustomList struct {
+	WeixinError
+	List []Account `json:"kf_list"`
+}
+
+// Account 客服账号
+type Account struct {
+	Account    string `json:"kf_account"`
+	NickName   string `json:"kf_nick"`
+	AccountId  string `json:"kf_id"`
+	HeadImgURL string `json:"kf_headimgurl"`
+}
+
+// GetCustomList 获取所有客服账号
+func GetCustomList() (accs []Account, err error) {
+	url := fmt.Sprintf(CustomListURL, AccessToken())
+	resp, err := http.Get(url)
+	if err != nil {
+		return nil, err
+	}
+
+	body, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return nil, err
+	}
+
+	list := &CustomList{}
+	err = json.Unmarshal(body, list)
+	if err != nil {
+		return nil, err
+	}
+
+	if list.ErrCode != WeixinErrCodeSuccess {
+		return nil, list
+	}
+
+	return list.List, nil
+}
 
 // CustMsg 客服消息接口
 type CustMsg interface{}
@@ -90,24 +194,11 @@ func SendCustomMsg(openId string, msg CustMsg) (err error) {
 	if err != nil {
 		return err
 	}
-	ret := fmt.Sprintf(`{"touser":"%s","msgtype":"%s","%s": %s}`,
+	jsonStr := fmt.Sprintf(`{"touser":"%s","msgtype":"%s","%s": %s}`,
 		openId, msgType, msgType, js)
 
-	url := fmt.Sprintf(customMsgURL, AccessToken())
-	log.Debugf("custMsgURL=%s", url)
-	resp, err := http.Post(url, "application/json", bytes.NewBufferString(ret))
-	if err != nil {
-		log.Error(err)
-		return err
-	}
-	defer resp.Body.Close()
+	url := fmt.Sprintf(CustomMsgURL, AccessToken())
+	err = Post(url, []byte(jsonStr))
 
-	body, err := ioutil.ReadAll(resp.Body)
-	if err != nil {
-		log.Error(err)
-		return err
-	}
-	log.Debugf("custom message sended: %s", body)
-
-	return nil
+	return err
 }
