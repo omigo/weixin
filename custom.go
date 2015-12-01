@@ -15,6 +15,9 @@ const (
 	customMsgURL = "https://api.weixin.qq.com/cgi-bin/message/custom/send?access_token=%s"
 )
 
+// CustMsg 客服消息接口
+type CustMsg interface{}
+
 // CustText 客服接口发送文本消息
 type CustText struct {
 	Content string `json:"content"` //	文本消息内容
@@ -62,7 +65,7 @@ type CustWXCard struct {
 }
 
 // SendCustomMsg 客服接口-发消息
-func SendCustomMsg(openId string, msg interface{}) (err error) {
+func SendCustomMsg(openId string, msg CustMsg) (err error) {
 	msgType := MsgTypeText
 	switch msg.(type) {
 	case *CustText:

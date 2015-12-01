@@ -12,13 +12,13 @@ func main() {
 
 	weixin.Initialize(originId, appId, appSecret, token, encodingAESKey)
 
-	weixin.MsgTextHandler = echoMsgText             // 注册文本消息处理器
-	weixin.MsgImageHandler = echoMsgImage           // 注册图片消息处理器
-	weixin.MsgVoiceHandler = echoMsgVoice           // 注册语音消息处理器
-	weixin.MsgVideoHandler = echoMsgVideo           // 注册视频消息处理器
-	weixin.MsgShortVideoHandler = echoMsgShortVideo // 注册小视频消息处理器
-	weixin.MsgLocationHandler = echoMsgLocation     // 注册位置消息处理器
-	weixin.MsgLinkHandler = echoMsgLink             // 注册链接消息处理器
+	weixin.RecvTextHandler = echoMsgText             // 注册文本消息处理器
+	weixin.RecvImageHandler = echoMsgImage           // 注册图片消息处理器
+	weixin.RecvVoiceHandler = echoMsgVoice           // 注册语音消息处理器
+	weixin.RecvVideoHandler = echoMsgVideo           // 注册视频消息处理器
+	weixin.RecvShortVideoHandler = echoMsgShortVideo // 注册小视频消息处理器
+	weixin.RecvLocationHandler = echoMsgLocation     // 注册位置消息处理器
+	weixin.RecvLinkHandler = echoMsgLink             // 注册链接消息处理器
 
 	http.HandleFunc("/weixin", weixin.HandleAccess)
 
@@ -26,12 +26,11 @@ func main() {
 	http.ListenAndServe(addr, nil)
 }
 
-func echoMsgText(m *weixin.MsgText) interface{} {
+func echoMsgText(m *weixin.RecvText) weixin.ReplyMsg {
 	log.Debugf("receive message: %+v", m)
 
 	// echo message
 	ret := &weixin.ReplyText{
-		MsgType:      m.MsgType,
 		ToUserName:   m.FromUserName,
 		FromUserName: m.ToUserName,
 		CreateTime:   m.CreateTime,
@@ -42,12 +41,11 @@ func echoMsgText(m *weixin.MsgText) interface{} {
 	return ret
 }
 
-func echoMsgImage(m *weixin.MsgImage) interface{} {
+func echoMsgImage(m *weixin.RecvImage) weixin.ReplyMsg {
 	log.Debugf("%+v", m)
 
 	// echo message
 	ret := &weixin.ReplyImage{
-		MsgType:      m.MsgType,
 		ToUserName:   m.FromUserName,
 		FromUserName: m.ToUserName,
 		CreateTime:   m.CreateTime,
@@ -59,12 +57,11 @@ func echoMsgImage(m *weixin.MsgImage) interface{} {
 	return ret
 }
 
-func echoMsgVoice(m *weixin.MsgVoice) interface{} {
+func echoMsgVoice(m *weixin.RecvVoice) weixin.ReplyMsg {
 	log.Debugf("%+v", m)
 
 	// echo message
 	ret := &weixin.ReplyVoice{
-		MsgType:      m.MsgType,
 		ToUserName:   m.FromUserName,
 		FromUserName: m.ToUserName,
 		CreateTime:   m.CreateTime,
@@ -75,12 +72,11 @@ func echoMsgVoice(m *weixin.MsgVoice) interface{} {
 	return ret
 }
 
-func echoMsgVideo(m *weixin.MsgVideo) interface{} {
+func echoMsgVideo(m *weixin.RecvVideo) weixin.ReplyMsg {
 	log.Debugf("%+v", m)
 
 	// MediaId ???
 	ret := &weixin.ReplyVideo{
-		MsgType:      m.MsgType,
 		ToUserName:   m.FromUserName,
 		FromUserName: m.ToUserName,
 		CreateTime:   m.CreateTime,
@@ -93,12 +89,11 @@ func echoMsgVideo(m *weixin.MsgVideo) interface{} {
 	return ret
 }
 
-func echoMsgShortVideo(m *weixin.MsgVideo) interface{} {
+func echoMsgShortVideo(m *weixin.RecvVideo) weixin.ReplyMsg {
 	log.Debugf("%+v", m)
 
 	// MediaId ???
 	ret := &weixin.ReplyVideo{
-		MsgType:      weixin.MsgTypeVideo,
 		ToUserName:   m.FromUserName,
 		FromUserName: m.ToUserName,
 		CreateTime:   m.CreateTime,
@@ -111,12 +106,11 @@ func echoMsgShortVideo(m *weixin.MsgVideo) interface{} {
 	return ret
 }
 
-func echoMsgLocation(m *weixin.MsgLocation) interface{} {
+func echoMsgLocation(m *weixin.RecvLocation) weixin.ReplyMsg {
 	log.Debugf("%+v", m)
 
 	// echo message
 	ret := &weixin.ReplyText{
-		MsgType:      weixin.MsgTypeText,
 		ToUserName:   m.FromUserName,
 		FromUserName: m.ToUserName,
 		CreateTime:   m.CreateTime,
@@ -127,7 +121,7 @@ func echoMsgLocation(m *weixin.MsgLocation) interface{} {
 	return ret
 }
 
-func echoMsgLink(m *weixin.MsgLink) interface{} {
+func echoMsgLink(m *weixin.RecvLink) weixin.ReplyMsg {
 	log.Debugf("%+v", m)
 
 	// 回复图文消息

@@ -28,14 +28,14 @@ func HandleAccess(w http.ResponseWriter, r *http.Request) {
 	case "GET":
 		w.Write([]byte(q.Get("echostr")))
 	case "POST":
-		HandleMessage(w, r)
+		processMessage(w, r)
 	default:
 		http.Error(w, "only GET or POST method allowed", http.StatusUnauthorized)
 	}
 }
 
-// HandleMessage 处理所有来自微信的消息，已经验证过 URL 和 Method 了
-func HandleMessage(w http.ResponseWriter, r *http.Request) {
+// 处理所有来自微信的消息，已经验证过 URL 和 Method 了
+func processMessage(w http.ResponseWriter, r *http.Request) {
 	q := r.URL.Query()
 	timestamp := q.Get("timestamp")
 	nonce := q.Get("nonce")
@@ -60,7 +60,7 @@ func HandleMessage(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// 处理消息
-	reply := processMessage(msg)
+	reply := HandleMessage(msg)
 
 	// 如果返回为 nil，表示不需要回复，结束
 	if reply == nil {
@@ -113,7 +113,24 @@ func parseBody(encryptType, timestamp, nonce, msgSignature string, body []byte) 
 	return msg, nil
 }
 
-func packReply(reply interface{}, encryptType, timestamp, nonce string) (ret []byte, err error) {
+func packReply(reply ReplyMsg, encryptType, timestamp, nonce string) (ret []byte, err error) {
+	switch reply.(type) {
+	case *ReplyText:
+		reply.SetMsgType(MsgTypeText)
+	case *ReplyImage:
+		reply.SetMsgType(MsgTypeImage)
+	case *ReplyVoice:
+		reply.SetMsgType(MsgTypeVoice)
+	case *ReplyVideo:
+		reply.SetMsgType(MsgTypeVideo)
+	case *ReplyMusic:
+		reply.SetMsgType(MsgTypeMusic)
+	case *ReplyNews:
+		reply.SetMsgType(MsgTypeNews)
+	default:
+		panic("unexpected custom message type")
+	}
+
 	ret, err = xml.MarshalIndent(reply, "", "  ")
 	if err != nil {
 		return nil, err

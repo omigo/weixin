@@ -2,68 +2,66 @@ package weixin
 
 import "github.com/omigo/log"
 
-// MessageHandler 处理各类消息
-type MessageHandler func(*Message) interface{}
-
 // Handlers 各类消息处理器
 var (
-	MsgTextHandler       func(*MsgText) interface{}
-	MsgImageHandler      func(*MsgImage) interface{}
-	MsgVoiceHandler      func(*MsgVoice) interface{}
-	MsgVideoHandler      func(*MsgVideo) interface{}
-	MsgShortVideoHandler func(*MsgVideo) interface{}
-	MsgLocationHandler   func(*MsgLocation) interface{}
-	MsgLinkHandler       func(*MsgLink) interface{}
+	RecvTextHandler       func(*RecvText) ReplyMsg
+	RecvImageHandler      func(*RecvImage) ReplyMsg
+	RecvVoiceHandler      func(*RecvVoice) ReplyMsg
+	RecvVideoHandler      func(*RecvVideo) ReplyMsg
+	RecvShortVideoHandler func(*RecvVideo) ReplyMsg
+	RecvLocationHandler   func(*RecvLocation) ReplyMsg
+	RecvLinkHandler       func(*RecvLink) ReplyMsg
 )
 
-func processMessage(msg *Message) (ret interface{}) {
+// HandleMessage 处理各类消息
+func HandleMessage(msg *Message) (ret ReplyMsg) {
 	log.Debugf("process `%s` message", msg.MsgType)
 
 	switch msg.MsgType {
 	case MsgTypeText:
-		if MsgTextHandler == nil {
-			log.Warnf("unregister MsgTextHandler: %s", msg.MsgType)
+		if RecvTextHandler == nil {
+			log.Warnf("unregister RecvTextHandler: %s", msg.MsgType)
 			return nil
 		}
-		ret = MsgTextHandler(msg.MsgText())
+		ret = RecvTextHandler(msg.RecvText())
 	case MsgTypeImage:
-		if MsgImageHandler == nil {
-			log.Warnf("unregister MsgImageHandler: %s", msg.MsgType)
+		if RecvImageHandler == nil {
+			log.Warnf("unregister RecvImageHandler: %s", msg.MsgType)
 			return nil
 		}
-		ret = MsgImageHandler(msg.MsgImage())
+		ret = RecvImageHandler(msg.RecvImage())
 	case MsgTypeVoice:
-		if MsgVoiceHandler == nil {
-			log.Warnf("unregister MsgVoiceHandler: %s", msg.MsgType)
+		if RecvVoiceHandler == nil {
+			log.Warnf("unregister RecvVoiceHandler: %s", msg.MsgType)
 			return nil
 		}
-		ret = MsgVoiceHandler(msg.MsgVoice())
+		ret = RecvVoiceHandler(msg.RecvVoice())
 	case MsgTypeVideo:
-		if MsgVideoHandler == nil {
-			log.Warnf("unregister MsgVideoHandler: %s", msg.MsgType)
+		if RecvVideoHandler == nil {
+			log.Warnf("unregister RecvVideoHandler: %s", msg.MsgType)
 			return nil
 		}
-		ret = MsgVideoHandler(msg.MsgVideo())
+		ret = RecvVideoHandler(msg.RecvVideo())
 	case MsgTypeShortVideo:
-		if MsgShortVideoHandler == nil {
-			log.Warnf("unregister MsgShortVideoHandler: %s", msg.MsgType)
+		if RecvShortVideoHandler == nil {
+			log.Warnf("unregister RecvShortVideoHandler: %s", msg.MsgType)
 			return nil
 		}
-		ret = MsgShortVideoHandler(msg.MsgVideo())
+		ret = RecvShortVideoHandler(msg.RecvVideo())
 	case MsgTypeLocation:
-		if MsgLocationHandler == nil {
-			log.Warnf("unregister MsgLocationHandler: %s", msg.MsgType)
+		if RecvLocationHandler == nil {
+			log.Warnf("unregister RecvLocationHandler: %s", msg.MsgType)
 			return nil
 		}
-		ret = MsgLocationHandler(msg.MsgLocation())
+		ret = RecvLocationHandler(msg.RecvLocation())
 	case MsgTypeLink:
-		if MsgLinkHandler == nil {
-			log.Warnf("unregister MsgLinkHandler: %s", msg.MsgType)
+		if RecvLinkHandler == nil {
+			log.Warnf("unregister RecvLinkHandler: %s", msg.MsgType)
 			return nil
 		}
-		ret = MsgLinkHandler(msg.MsgLink())
+		ret = RecvLinkHandler(msg.RecvLink())
 	default:
-		log.Warnf("unexpected MsgType: %s", msg.MsgType)
+		log.Warnf("unexpected RecvType: %s", msg.MsgType)
 	}
 
 	return ret
