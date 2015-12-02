@@ -17,6 +17,7 @@ const (
 	MsgTypeMusic      MsgType = "music"      // 音乐消息
 	MsgTypeNews       MsgType = "news"       // 图文消息
 	MsgTypeWXCard     MsgType = "wxcard"     // 卡券，客服消息时使用
+	MsgTypeEvent      MsgType = "event"      // 事件推送
 )
 
 // EncMessage 加密消息体
@@ -73,4 +74,33 @@ type Message struct {
 	Title       string `xml:",omitempty"` // 消息标题
 	Description string `xml:",omitempty"` // 消息描述
 	Url         string `xml:",omitempty"` // 消息链接
+
+	// 接收事件推送
+
+	// 关注/取消关注事件
+	Event EventType // 事件类型，subscribe(订阅)、unsubscribe(取消订阅)
+
+	// 扫描带参数二维码事件
+	// Event	EventType // 事件类型，subscribe
+	// 用户扫描带场景值二维码时，可能推送以下两种事件：
+	// 1. 如果用户还未关注公众号，则用户可以关注公众号，关注后微信会将带场景值关注事件推送给开发者。
+	//    EventKey	事件KEY值，qrscene_为前缀，后面为二维码的参数值
+	// 2. 如果用户已经关注公众号，则微信会将带场景值扫描事件推送给开发者。
+	//    EventKey	事件KEY值，是一个32位无符号整数，即创建二维码时的二维码scene_id
+	EventKey string // 事件KEY值，qrscene_为前缀，后面为二维码的参数值
+	Ticket   string // 二维码的ticket，可用来换取二维码图片
+
+	// 上报地理位置事件
+	// Event EventType	// 事件类型，LOCATION
+	Latitude  float64 // 地理位置纬度
+	Longitude float64 // 地理位置经度
+	Precision float64 // 地理位置精度
+
+	// 点击菜单拉取消息时的事件推送
+	// Event    EventType // 事件类型，CLICK
+	// EventKey string    // 事件KEY值，与自定义菜单接口中KEY值对应
+
+	// 点击菜单跳转链接时的事件推送
+	// Event    EventType // 事件类型，VIEW
+	// EventKey string    // 事件KEY值，设置的跳转URL
 }
