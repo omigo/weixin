@@ -50,5 +50,5 @@ func Initialize(originId, appId, appSecret, token, encodingAESKey string) {
 
 	// refresh access token
 	RefreshAccessToken(AppId, AppSecret)
-	time.Sleep(1 * time.Second) // waiting to refresh token
+	time.Sleep(2 * time.Second) // waiting to refresh token
 }

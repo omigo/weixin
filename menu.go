@@ -21,6 +21,7 @@ type Button struct {
 	Name      string   `json:"name"`
 	Type      string   `json:"type,omitempty"`
 	Key       string   `json:"key,omitempty"`
+	URL       string   `json:"url,omitempty"`
 	SubButton []Button `json:"sub_button,omitempty"`
 }
 

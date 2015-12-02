@@ -43,9 +43,19 @@ func TestCreateMenu(t *testing.T) {
 				},
 			},
 			Button{
-				Name: "发送位置",
-				Type: "location_select",
-				Key:  "rselfmenu_2_0",
+				Name: "测试",
+				SubButton: []Button{
+					Button{
+						Name: "腾讯",
+						Type: "view",
+						URL:  "http://qq.com",
+					},
+					Button{
+						Name: "发送位置",
+						Type: "location_select",
+						Key:  "rselfmenu_2_0",
+					},
+				},
 			},
 		},
 	}

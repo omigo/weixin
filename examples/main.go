@@ -212,7 +212,7 @@ func EventClickHandler(m *weixin.EventClick) weixin.ReplyMsg {
 func EventViewHandler(m *weixin.EventView) weixin.ReplyMsg {
 	log.Debugf("%+v", m)
 
-	// echo message
+	// echo message 貌似用户收不到回复的消息？？？
 	ret := &weixin.ReplyText{
 		ToUserName:   m.FromUserName,
 		FromUserName: m.ToUserName,
