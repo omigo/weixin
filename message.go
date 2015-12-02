@@ -103,4 +103,9 @@ type Message struct {
 	// 点击菜单跳转链接时的事件推送
 	// Event    EventType // 事件类型，VIEW
 	// EventKey string    // 事件KEY值，设置的跳转URL
+
+	// 模版消息发送任务完成后，微信服务器会将是否送达成功作为通知
+	// Event         EventType // 事件类型，TEMPLATESENDJOBFINISH
+	TplMsgId int    // 消息id
+	Status   string // 发送状态为成功
 }

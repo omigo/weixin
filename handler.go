@@ -15,11 +15,12 @@ var (
 
 // 各类事件处理器
 var (
-	EventSubscribeHandler   func(*EventSubscribe) ReplyMsg
-	EventUnsubscribeHandler func(*EventSubscribe) ReplyMsg
-	EventLocationHandler    func(*EventLocation) ReplyMsg
-	EventClickHandler       func(*EventClick) ReplyMsg
-	EventViewHandler        func(*EventView) ReplyMsg
+	EventSubscribeHandler             func(*EventSubscribe) ReplyMsg
+	EventUnsubscribeHandler           func(*EventSubscribe) ReplyMsg
+	EventLocationHandler              func(*EventLocation) ReplyMsg
+	EventClickHandler                 func(*EventClick) ReplyMsg
+	EventViewHandler                  func(*EventView) ReplyMsg
+	EventTemplateSendJobFinishHandler func(*EventTemplateSendJobFinish) ReplyMsg
 )
 
 // RecvDefaultHandler 如果没有注册某类消息处理器，那么收到这类消息时，使用这个默认处理器
@@ -101,6 +102,10 @@ func HandleEvent(msg *Message) (reply ReplyMsg) {
 	case EventTypeView:
 		if EventViewHandler != nil {
 			return EventViewHandler(NewEventView(msg))
+		}
+	case EventTypeTemplateSendJobFinish:
+		if EventTemplateSendJobFinishHandler != nil {
+			return EventTemplateSendJobFinishHandler(NewEventTemplateSendJobFinish(msg))
 		}
 	default:
 		log.Errorf("unexpected receive EventType: %s", msg.Event)

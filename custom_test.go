@@ -6,8 +6,6 @@ import (
 )
 
 func TestSendCustomMsg(t *testing.T) {
-	Initialize(originId, appId, appSecret, token, encodingAESKey)
-
 	ct := &CustText{
 		Content: "我们都是好孩子",
 	}
@@ -20,8 +18,6 @@ func TestSendCustomMsg(t *testing.T) {
 }
 
 func TestAddCustom(t *testing.T) {
-	Initialize(originId, appId, appSecret, token, encodingAESKey)
-
 	err := AddCustom("shangxuejin@gmail.com", "migo", "87654321")
 	if err != nil {
 		t.Error(err)
@@ -30,8 +26,6 @@ func TestAddCustom(t *testing.T) {
 }
 
 func TestUploadHeading(t *testing.T) {
-	Initialize(originId, appId, appSecret, token, encodingAESKey)
-
 	file, err := os.Open("custom_test.go")
 	if err != nil {
 		t.Error(err)
@@ -46,8 +40,6 @@ func TestUploadHeading(t *testing.T) {
 }
 
 func TestGetCustomList(t *testing.T) {
-	Initialize(originId, appId, appSecret, token, encodingAESKey)
-
 	accs, err := GetCustomList()
 	if err != nil {
 		t.Error(err)
