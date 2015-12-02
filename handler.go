@@ -13,56 +13,49 @@ var (
 	RecvLinkHandler       func(*RecvLink) ReplyMsg
 )
 
+// RecvDefaultHandler 如果没有注册某类消息，那么收到这类消息时，使用这个默认处理器
+var RecvDefaultHandler = func(msg *Message) (reply ReplyMsg) {
+	return nil
+}
+
 // HandleMessage 处理各类消息
 func HandleMessage(msg *Message) (ret ReplyMsg) {
 	log.Debugf("process `%s` message", msg.MsgType)
 
 	switch msg.MsgType {
 	case MsgTypeText:
-		if RecvTextHandler == nil {
-			log.Warnf("unregister RecvTextHandler: %s", msg.MsgType)
-			return nil
+		if RecvTextHandler != nil {
+			return RecvTextHandler(NewRecvText(msg))
 		}
-		ret = RecvTextHandler(msg.RecvText())
 	case MsgTypeImage:
-		if RecvImageHandler == nil {
-			log.Warnf("unregister RecvImageHandler: %s", msg.MsgType)
-			return nil
+		if RecvImageHandler != nil {
+			return RecvImageHandler(NewRecvImage(msg))
 		}
-		ret = RecvImageHandler(msg.RecvImage())
 	case MsgTypeVoice:
-		if RecvVoiceHandler == nil {
-			log.Warnf("unregister RecvVoiceHandler: %s", msg.MsgType)
-			return nil
+		if RecvVoiceHandler != nil {
+			return RecvVoiceHandler(NewRecvVoice(msg))
 		}
-		ret = RecvVoiceHandler(msg.RecvVoice())
 	case MsgTypeVideo:
-		if RecvVideoHandler == nil {
-			log.Warnf("unregister RecvVideoHandler: %s", msg.MsgType)
-			return nil
+		if RecvVideoHandler != nil {
+			return RecvVideoHandler(NewRecvVideo(msg))
 		}
-		ret = RecvVideoHandler(msg.RecvVideo())
 	case MsgTypeShortVideo:
-		if RecvShortVideoHandler == nil {
-			log.Warnf("unregister RecvShortVideoHandler: %s", msg.MsgType)
-			return nil
+		if RecvShortVideoHandler != nil {
+			return RecvShortVideoHandler(NewRecvVideo(msg))
 		}
-		ret = RecvShortVideoHandler(msg.RecvVideo())
 	case MsgTypeLocation:
-		if RecvLocationHandler == nil {
-			log.Warnf("unregister RecvLocationHandler: %s", msg.MsgType)
-			return nil
+		if RecvLocationHandler != nil {
+			return RecvLocationHandler(NewRecvLocation(msg))
 		}
-		ret = RecvLocationHandler(msg.RecvLocation())
 	case MsgTypeLink:
-		if RecvLinkHandler == nil {
-			log.Warnf("unregister RecvLinkHandler: %s", msg.MsgType)
-			return nil
+		if RecvLinkHandler != nil {
+			return RecvLinkHandler(NewRecvLink(msg))
 		}
-		ret = RecvLinkHandler(msg.RecvLink())
 	default:
-		log.Warnf("unexpected RecvType: %s", msg.MsgType)
+		log.Errorf("unexpected receive MsgType: %s", msg.MsgType)
+		return nil
 	}
 
-	return ret
+	log.Debugf("unregistered receive message handler: %s", msg.MsgType)
+	return RecvDefaultHandler(msg)
 }

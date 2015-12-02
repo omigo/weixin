@@ -17,8 +17,9 @@ func main() {
 	weixin.RecvVoiceHandler = echoMsgVoice           // 注册语音消息处理器
 	weixin.RecvVideoHandler = echoMsgVideo           // 注册视频消息处理器
 	weixin.RecvShortVideoHandler = echoMsgShortVideo // 注册小视频消息处理器
-	weixin.RecvLocationHandler = echoMsgLocation     // 注册位置消息处理器
-	weixin.RecvLinkHandler = echoMsgLink             // 注册链接消息处理器
+	// weixin.RecvLocationHandler = echoMsgLocation     // 注册位置消息处理器
+	weixin.RecvLinkHandler = echoMsgLink       // 注册链接消息处理器
+	weixin.RecvDefaultHandler = defaultHandler // 注册默认处理器
 
 	http.HandleFunc("/weixin", weixin.HandleAccess)
 
@@ -127,4 +128,19 @@ func echoMsgLink(m *weixin.RecvLink) weixin.ReplyMsg {
 	// 回复图文消息
 
 	return nil
+}
+
+func defaultHandler(msg *weixin.Message) weixin.ReplyMsg {
+	log.Debugf("%+v", msg)
+
+	// echo message
+	ret := &weixin.ReplyText{
+		ToUserName:   msg.FromUserName,
+		FromUserName: msg.ToUserName,
+		CreateTime:   msg.CreateTime,
+		Content:      "openId: " + msg.FromUserName,
+	}
+
+	log.Debugf("replay message: %+v", ret)
+	return ret
 }

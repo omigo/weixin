@@ -1,7 +1,36 @@
 package weixin
 
+import "github.com/omigo/log"
+
+// RecvMsg 用户消息
+type RecvMsg interface{}
+
+// NewRecvMsg 把通用 struct 转化成相应类型的 struct
+func NewRecvMsg(msg *Message) RecvMsg {
+	switch msg.MsgType {
+	case MsgTypeText:
+		return NewRecvText(msg)
+	case MsgTypeImage:
+		return NewRecvImage(msg)
+	case MsgTypeVoice:
+		return NewRecvVoice(msg)
+	case MsgTypeVideo:
+		return NewRecvVideo(msg)
+	case MsgTypeShortVideo:
+		return NewRecvVideo(msg)
+	case MsgTypeLocation:
+		return NewRecvLocation(msg)
+	case MsgTypeLink:
+		return NewRecvLink(msg)
+	default:
+		log.Errorf("unexpected receive MsgType: %s", msg.MsgType)
+		return nil
+	}
+}
+
 // RecvText 接收文本消息
 type RecvText struct {
+	RecvMsg
 	ToUserName   string  // 开发者微信号
 	FromUserName string  // 发送方帐号（一个OpenID）
 	CreateTime   string  // 消息创建时间（整型）
@@ -10,8 +39,8 @@ type RecvText struct {
 	MsgId        int     // 消息id，64位整型
 }
 
-// RecvText 把通用 struct 转化成相应类型的 struct
-func (m *Message) RecvText() *RecvText {
+// NewRecvText 把通用 struct 转化成相应类型的 struct
+func NewRecvText(m *Message) *RecvText {
 	return &RecvText{
 		ToUserName:   m.ToUserName,
 		FromUserName: m.FromUserName,
@@ -24,6 +53,7 @@ func (m *Message) RecvText() *RecvText {
 
 // RecvImage 接收图片消息
 type RecvImage struct {
+	RecvMsg
 	ToUserName   string  // 开发者微信号
 	FromUserName string  // 发送方帐号（一个OpenID）
 	CreateTime   string  // 消息创建时间（整型）
@@ -33,8 +63,8 @@ type RecvImage struct {
 	MsgId        int     // 消息id，64位整型
 }
 
-// RecvImage 把通用 struct 转化成相应类型的 struct
-func (m *Message) RecvImage() *RecvImage {
+// NewRecvImage 把通用 struct 转化成相应类型的 struct
+func NewRecvImage(m *Message) *RecvImage {
 	return &RecvImage{
 		ToUserName:   m.ToUserName,
 		FromUserName: m.FromUserName,
@@ -48,6 +78,7 @@ func (m *Message) RecvImage() *RecvImage {
 
 // RecvVoice 接收视频/小视频消息
 type RecvVoice struct {
+	RecvMsg
 	ToUserName   string  // 开发者微信号
 	FromUserName string  // 发送方帐号（一个OpenID）
 	CreateTime   string  // 消息创建时间（整型）
@@ -58,8 +89,8 @@ type RecvVoice struct {
 	MsgId        int     // 消息id，64位整型
 }
 
-// RecvVoice 把通用 struct 转化成相应类型的 struct
-func (m *Message) RecvVoice() *RecvVoice {
+// NewRecvVoice 把通用 struct 转化成相应类型的 struct
+func NewRecvVoice(m *Message) *RecvVoice {
 	return &RecvVoice{
 		ToUserName:   m.ToUserName,
 		FromUserName: m.FromUserName,
@@ -74,6 +105,7 @@ func (m *Message) RecvVoice() *RecvVoice {
 
 // RecvVideo 接收图片消息
 type RecvVideo struct {
+	RecvMsg
 	ToUserName   string  // 开发者微信号
 	FromUserName string  // 发送方帐号（一个OpenID）
 	CreateTime   string  // 消息创建时间（整型）
@@ -83,8 +115,8 @@ type RecvVideo struct {
 	MsgId        int     // 消息id，64位整型
 }
 
-// RecvVideo 把通用 struct 转化成相应类型的 struct
-func (m *Message) RecvVideo() *RecvVideo {
+// NewRecvVideo 把通用 struct 转化成相应类型的 struct
+func NewRecvVideo(m *Message) *RecvVideo {
 	return &RecvVideo{
 		ToUserName:   m.ToUserName,
 		FromUserName: m.FromUserName,
@@ -98,6 +130,7 @@ func (m *Message) RecvVideo() *RecvVideo {
 
 // RecvLocation 接收地理位置消息
 type RecvLocation struct {
+	RecvMsg
 	ToUserName   string  // 开发者微信号
 	FromUserName string  // 发送方帐号（一个OpenID）
 	CreateTime   string  // 消息创建时间（整型）
@@ -109,8 +142,8 @@ type RecvLocation struct {
 	MsgId        int     // 消息id，64位整型
 }
 
-// RecvLocation 把通用 struct 转化成相应类型的 struct
-func (m *Message) RecvLocation() *RecvLocation {
+// NewRecvLocation 把通用 struct 转化成相应类型的 struct
+func NewRecvLocation(m *Message) *RecvLocation {
 	return &RecvLocation{
 		ToUserName:   m.ToUserName,
 		FromUserName: m.FromUserName,
@@ -126,6 +159,7 @@ func (m *Message) RecvLocation() *RecvLocation {
 
 // RecvLink 接收链接消息
 type RecvLink struct {
+	RecvMsg
 	ToUserName   string  // 开发者微信号
 	FromUserName string  // 发送方帐号（一个OpenID）
 	CreateTime   string  // 消息创建时间（整型）
@@ -136,8 +170,8 @@ type RecvLink struct {
 	MsgId        int     // 消息id，64位整型
 }
 
-// RecvLink 把通用 struct 转化成相应类型的 struct
-func (m *Message) RecvLink() *RecvLink {
+// NewRecvLink 把通用 struct 转化成相应类型的 struct
+func NewRecvLink(m *Message) *RecvLink {
 	return &RecvLink{
 		ToUserName:   m.ToUserName,
 		FromUserName: m.FromUserName,
