@@ -12,6 +12,53 @@ import (
 	"github.com/omigo/log"
 )
 
+// GetUnmarshal 工具类, Get 并解析返回的报文，返回 error
+func GetUnmarshal(url string, ret interface{}) (err error) {
+	log.Debugf("url=%s", url)
+	resp, err := http.Get(url)
+	if err != nil {
+		return err
+	}
+	defer resp.Body.Close()
+
+	body, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return err
+	}
+	log.Debugf("response: %s", body)
+
+	err = json.Unmarshal(body, ret)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// PostMarshal 工具类, POST 编组并返回 error
+func PostMarshal(url string, v interface{}) (err error) {
+	js, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	wxerr := &WeixinError{}
+	err = PostUnmarshal(url, js, wxerr)
+	if err != nil {
+		return err
+	}
+
+	if wxerr.ErrCode == WeixinErrCodeSuccess {
+		return nil
+	}
+
+	// if wxerr.ErrCode == WeixinErrCodeSystemBusy {
+	//
+	// }
+	log.Errorf("weixin error %d: %s", wxerr.ErrCode, wxerr.ErrMsg)
+	return wxerr
+}
+
 // Post 工具类, POST json 并返回 error
 func Post(url string, js []byte) (err error) {
 	wxerr := &WeixinError{}
