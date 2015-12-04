@@ -31,6 +31,8 @@ func main() {
 	weixin.EventDefaultHandler = EventDefaultHandler // 注册默认处理器
 
 	http.HandleFunc("/weixin", weixin.HandleAccess)
+	http.Handle("/", http.FileServer(http.Dir("examples/static")))
+	// http.Handle("/admin/", http.StripPrefix("/admin/", http.FileServer(http.Dir("admin"))))
 
 	log.Debugf("server is running at %s", addr)
 	http.ListenAndServe(addr, nil)
