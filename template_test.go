@@ -3,8 +3,6 @@ package weixin
 import "testing"
 
 func TestSetIndustry(t *testing.T) {
-	Initialize(originId, appId, appSecret, token, encodingAESKey)
-
 	err := SetIndustry(1, 4)
 	if err != nil {
 		t.Error(err)
@@ -13,8 +11,6 @@ func TestSetIndustry(t *testing.T) {
 }
 
 func TestAddTemplate(t *testing.T) {
-	Initialize(originId, appId, appSecret, token, encodingAESKey)
-
 	templateId, err := AddTemplate("TM00015")
 	if err != nil {
 		t.Error(err)
@@ -25,8 +21,6 @@ func TestAddTemplate(t *testing.T) {
 }
 
 func TestSendTemplateMsg(t *testing.T) {
-	Initialize(originId, appId, appSecret, token, encodingAESKey)
-
 	tm := &TemplateMsg{
 		ToUser:     "odSYLjwG_jAujPH-XJfDseBjuggo",
 		TemplateId: "peyNhQaS0BmNk7_ynbfS9aao323c_7Kz0p3qSknu-o0",

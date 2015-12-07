@@ -3,8 +3,6 @@ package weixin
 import "testing"
 
 func TestCreateMenu(t *testing.T) {
-	Initialize(originId, appId, appSecret, token, encodingAESKey)
-
 	buttons := []Button{
 		Button{
 			Name: "扫码",
@@ -66,8 +64,6 @@ func TestCreateMenu(t *testing.T) {
 }
 
 func TestGetMenu(t *testing.T) {
-	Initialize(originId, appId, appSecret, token, encodingAESKey)
-
 	buttons, err := GetMenu()
 	if err != nil {
 		t.Error(err)
@@ -77,9 +73,15 @@ func TestGetMenu(t *testing.T) {
 	t.Logf("%#v", buttons)
 }
 
-func TestGetMenuInfo(t *testing.T) {
-	Initialize(originId, appId, appSecret, token, encodingAESKey)
+func TestDeleteMenu(t *testing.T) {
+	err := DeleteMenu()
+	if err != nil {
+		t.Error(err)
+		t.FailNow()
+	}
+}
 
+func TestGetMenuInfo(t *testing.T) {
 	mi, err := GetMenuInfo()
 	if err != nil {
 		t.Error(err)
