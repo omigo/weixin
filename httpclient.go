@@ -32,12 +32,13 @@ func GetUnmarshal(url string, ret interface{}) (err error) {
 		return err
 	}
 
-	// if wxerr, ok := ret.(*WeixinError); ok {
-	// 	if wxerr.ErrCode != WeixinErrCodeSuccess {
-	// 		ret = nil
-	// 		return wxerr
-	// 	}
-	// }
+	if wxerrer, ok := ret.(WeixinErrorer); ok {
+		wxerr := wxerrer.GetWeixinError()
+		if wxerr.ErrCode != WeixinErrCodeSuccess {
+			ret = nil
+			return wxerr
+		}
+	}
 
 	return nil
 }

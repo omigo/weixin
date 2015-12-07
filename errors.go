@@ -8,10 +8,32 @@ const (
 	WeixinErrCodeSuccess    = 0
 )
 
+// WeixinErrorer 微信错误消息接口
+type WeixinErrorer interface {
+	// GetErrCode() int
+	// GetErrMsg() string
+	GetWeixinError() *WeixinError
+}
+
 // WeixinError 微信错误
 type WeixinError struct {
 	ErrCode int    `json:"errcode"`
 	ErrMsg  string `json:"errmsg"`
+}
+
+// // GetErrCode 返回微信错误码
+// func (e *WeixinError) GetErrCode() int {
+// 	return e.ErrCode
+// }
+//
+// // GetErrMsg 返回微信错误消息
+// func (e *WeixinError) GetErrMsg() string {
+// 	return e.ErrMsg
+// }
+
+// GetWeixinError 返回微信错误消息
+func (e *WeixinError) GetWeixinError() *WeixinError {
+	return e
 }
 
 func (e *WeixinError) Error() string {
