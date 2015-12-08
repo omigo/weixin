@@ -54,7 +54,7 @@ func EventLocationHandler(m *weixin.EventLocation) weixin.ReplyMsg {
 		ToUserName:   m.FromUserName,
 		FromUserName: m.ToUserName,
 		CreateTime:   m.CreateTime,
-		Content: fmt.Sprintf("Latitude=%s, Longitude=%s, Precision=%s",
+		Content: fmt.Sprintf("Latitude=%.6f, Longitude=%.6f, Precision=%.6f",
 			m.Latitude, m.Longitude, m.Precision),
 	}
 

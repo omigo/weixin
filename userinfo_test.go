@@ -33,3 +33,14 @@ func TestBatchGetUserInfo(t *testing.T) {
 
 	t.Logf("%#v", infos)
 }
+
+func TestGetUserList(t *testing.T) {
+	openIds, total, count, nextOpenId, err := GetUserList()
+
+	if err != nil {
+		t.Log(err)
+		t.FailNow()
+	}
+
+	t.Logf("%#v %#v %#v %#v", openIds, total, count, nextOpenId)
+}

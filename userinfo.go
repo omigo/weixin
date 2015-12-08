@@ -12,6 +12,7 @@ const (
 	UserInfoUpdateRemarkURL     = "https://api.weixin.qq.com/cgi-bin/user/info/updateremark?access_token=%s"
 	UserInfoGetUserInfoURL      = "https://api.weixin.qq.com/cgi-bin/user/info?access_token=%s&openid=%s&lang=%s"
 	UserInfoBatchGetUserInfoURL = "https://api.weixin.qq.com/cgi-bin/user/info/batchget?access_token=%s"
+	UserInfoGetUserListURL      = "https://api.weixin.qq.com/cgi-bin/user/get?access_token=%s&next_openid=%s"
 )
 
 // UpdateUserRemark 设置用户备注名
@@ -82,14 +83,37 @@ func BatchGetUserInfo(openIds []string, lang ...Lang) (infos []UserInfo, err err
 	var buf bytes.Buffer
 	t.Execute(&buf, openIds)
 
-	wapper := &struct {
+	wrapper := &struct {
 		WeixinError
 		UserInfoList []UserInfo `json:"user_info_list"`
 	}{}
-	err = PostUnmarshal(url, buf.Bytes(), wapper)
+	err = PostUnmarshal(url, buf.Bytes(), wrapper)
 	if err != nil {
 		return nil, err
 	}
 
-	return wapper.UserInfoList, nil
+	return wrapper.UserInfoList, nil
+}
+
+// GetUserList 获取用户列表。第一个拉取的OPENID，nextOpenId 不填默认从头开始拉取
+func GetUserList(fromOpenId ...string) (openIds []string, total, count int, nextOpenId string, err error) {
+	if len(fromOpenId) == 0 {
+		fromOpenId = []string{""}
+	}
+	url := fmt.Sprintf(UserInfoGetUserListURL, AccessToken(), fromOpenId[0])
+
+	wrapper := &struct {
+		Total      int    `json:"total"`
+		Count      int    `json:"count"`
+		NextOpenId string `json:"next_openid"`
+		Data       struct {
+			OpenIds []string `json:"openid"`
+		} `json:"data"`
+	}{}
+	err = GetUnmarshal(url, wrapper)
+	if err != nil {
+		return nil, 0, 0, "", err
+	}
+
+	return wrapper.Data.OpenIds, wrapper.Total, wrapper.Count, wrapper.NextOpenId, nil
 }
