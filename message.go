@@ -108,4 +108,22 @@ type Message struct {
 	// Event         EventType // 事件类型，TEMPLATESENDJOBFINISH
 	TplMsgId int    // 消息id
 	Status   string // 发送状态为成功
+
+	// 事件类型，scancode_push/scancode_waitmsg
+	// Event        EventType // 事件类型，scancode_push
+	// EventKey     string    // 事件KEY值，由开发者在创建菜单时设定
+	ScanType   string `json:"ScanCodeInfo>ScanType"`   // 扫描类型，一般是qrcode
+	ScanResult string `json:"ScanCodeInfo>ScanResult"` // 扫描结果，即二维码对应的字符串信息
+
+	// 事件类型，pic_sysphoto
+	// Event      EventType // 事件类型，pic_sysphoto
+	// EventKey   string    // 事件KEY值，由开发者在创建菜单时设定
+	Count      int      `json:"SendPicsInfo>Count"`                  // 发送的图片数量
+	PicMd5Sums []string `json:"SendPicsInfo>PicList>item>PicMd5Sum"` // 图片的MD5值，开发者若需要，可用于验证接收到图片
+
+	LocationX2 float64 `xml:"SendLocationInfo>Location_X,omitempty"` // 地理位置维度
+	LocationY2 float64 `xml:"SendLocationInfo>Location_Y,omitempty"` // 地理位置经度
+	Scale2     int     `xml:"SendLocationInfo>Scale,omitempty"`      // 精度，可理解为精度或者比例尺、越精细的话 scale越高
+	Label2     string  `xml:"SendLocationInfo>Label,omitempty"`      // 地理位置的字符串信息
+	Poiname    string  `xml:"SendLocationInfo>Poiname,omitempty"`    // 朋友圈POI的名字，可能为空
 }

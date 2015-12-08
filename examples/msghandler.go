@@ -1,6 +1,8 @@
 package main
 
 import (
+	"encoding/json"
+
 	"github.com/omigo/log"
 	"github.com/omigo/weixin"
 )
@@ -8,12 +10,15 @@ import (
 func defaultHandler(msg *weixin.Message) weixin.ReplyMsg {
 	log.Debugf("%+v", msg)
 
+	event := weixin.NewRecvEvent(msg)
+	js, _ := json.Marshal(event)
+
 	// echo message
 	ret := &weixin.ReplyText{
 		ToUserName:   msg.FromUserName,
 		FromUserName: msg.ToUserName,
 		CreateTime:   msg.CreateTime,
-		Content:      "openId: " + msg.FromUserName,
+		Content:      string(js),
 	}
 
 	log.Debugf("replay message: %+v", ret)

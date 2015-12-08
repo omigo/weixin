@@ -21,6 +21,12 @@ var (
 	EventClickHandler                 func(*EventClick) ReplyMsg
 	EventViewHandler                  func(*EventView) ReplyMsg
 	EventTemplateSendJobFinishHandler func(*EventTemplateSendJobFinish) ReplyMsg
+	EventScancodePushHandler          func(*EventScancodePush) ReplyMsg
+	EventScancodeWaitmsgHandler       func(*EventScancodeWaitmsg) ReplyMsg
+	EventPicSysphotoHandler           func(*EventPicSysphoto) ReplyMsg
+	EventPicPhotoOrAlbumHandler       func(*EventPicPhotoOrAlbum) ReplyMsg
+	EventPicWeixinHandler             func(*EventPicWeixin) ReplyMsg
+	EventLocationSelectHandler        func(*EventLocationSelect) ReplyMsg
 )
 
 // RecvDefaultHandler 如果没有注册某类消息处理器，那么收到这类消息时，使用这个默认处理器
