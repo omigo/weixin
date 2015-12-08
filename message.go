@@ -126,4 +126,11 @@ type Message struct {
 	Scale2     int     `xml:"SendLocationInfo>Scale,omitempty"`      // 精度，可理解为精度或者比例尺、越精细的话 scale越高
 	Label2     string  `xml:"SendLocationInfo>Label,omitempty"`      // 地理位置的字符串信息
 	Poiname    string  `xml:"SendLocationInfo>Poiname,omitempty"`    // 朋友圈POI的名字，可能为空
+
+	// 事件类型 qualification_verify_success,naming_verify_success,annual_renew,verify_expired
+	ExpiredTime int // 有效期 (整形)，指的是时间戳，将于该时间戳认证过期
+
+	// 事件类型，qualification_verify_fail,naming_verify_fail
+	FailTime   int    // 失败发生时间 (整形)，时间戳
+	FailReason string // 认证失败的原因
 }
