@@ -120,12 +120,13 @@ func PostUnmarshal(url string, js []byte, ret interface{}) (err error) {
 }
 
 // Upload 工具类, 上传文件
-func Upload(url string, file *os.File) (err error) {
+func Upload(url, fieldName string, file *os.File, ret interface{}) (err error) {
 	buf := &bytes.Buffer{}
 	w := multipart.NewWriter(buf)
 
 	//关键的一步操作
-	fw, err := w.CreateFormField(file.Name())
+	// fw, err := w.CreateFormField(file.Name())
+	fw, err := w.CreateFormFile(fieldName, file.Name())
 	if err != nil {
 		return err
 	}
@@ -136,6 +137,7 @@ func Upload(url string, file *os.File) (err error) {
 	contentType := w.FormDataContentType()
 	w.Close()
 
+	log.Debugf("url=%s, fieldName=%s, fileName=%s", url, fieldName, file.Name())
 	resp, err := http.Post(url, contentType, buf)
 	if err != nil {
 		return err
@@ -148,20 +150,18 @@ func Upload(url string, file *os.File) (err error) {
 	}
 	log.Debugf("response: %s", body)
 
-	wxerr := &WeixinError{}
-	err = json.Unmarshal(body, wxerr)
+	err = json.Unmarshal(body, ret)
 	if err != nil {
 		return err
 	}
 
-	if wxerr.ErrCode == WeixinErrCodeSuccess {
-		return nil
+	if wxerrer, ok := ret.(WeixinErrorer); ok {
+		wxerr := wxerrer.GetWeixinError()
+		if wxerr.ErrCode != WeixinErrCodeSuccess {
+			ret = nil
+			return wxerr
+		}
 	}
 
-	// if wxerr.ErrCode == WeixinErrCodeSystemBusy {
-	//
-	// }
-
-	log.Errorf("weixin error %d: %s", wxerr.ErrCode, wxerr.ErrMsg)
-	return wxerr
+	return nil
 }

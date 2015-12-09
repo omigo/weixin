@@ -76,7 +76,8 @@ func operateCustomStruct(url string, cust *Custom) (err error) {
 // UploadHeading 设置客服帐号的头像
 func UploadHeading(account string, file *os.File) (err error) {
 	url := fmt.Sprintf(CustomHeadingURL, AccessToken(), account)
-	return Upload(url, file)
+	wxerr := &WeixinError{} // 忽略返回
+	return Upload(url, file.Name(), file, wxerr)
 }
 
 // CustomList 客服列表
