@@ -14,7 +14,7 @@ const (
 	addr = ":3080"
 )
 
-func TestValidateURL(t *testing.T) {
+func TestAccess(t *testing.T) {
 	req, _ := http.NewRequest("GET", testURL, nil)
 
 	w := httptest.NewRecorder()
