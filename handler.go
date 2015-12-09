@@ -21,12 +21,20 @@ var (
 	EventClickHandler                 func(*EventClick) ReplyMsg
 	EventViewHandler                  func(*EventView) ReplyMsg
 	EventTemplateSendJobFinishHandler func(*EventTemplateSendJobFinish) ReplyMsg
-	EventScancodePushHandler          func(*EventScancodePush) ReplyMsg
-	EventScancodeWaitmsgHandler       func(*EventScancodeWaitmsg) ReplyMsg
-	EventPicSysphotoHandler           func(*EventPicSysphoto) ReplyMsg
-	EventPicPhotoOrAlbumHandler       func(*EventPicPhotoOrAlbum) ReplyMsg
-	EventPicWeixinHandler             func(*EventPicWeixin) ReplyMsg
-	EventLocationSelectHandler        func(*EventLocationSelect) ReplyMsg
+
+	EventScancodePushHandler    func(*EventScancodePush) ReplyMsg
+	EventScancodeWaitmsgHandler func(*EventScancodeWaitmsg) ReplyMsg
+	EventPicSysphotoHandler     func(*EventPicSysphoto) ReplyMsg
+	EventPicPhotoOrAlbumHandler func(*EventPicPhotoOrAlbum) ReplyMsg
+	EventPicWeixinHandler       func(*EventPicWeixin) ReplyMsg
+	EventLocationSelectHandler  func(*EventLocationSelect) ReplyMsg
+
+	EventQualificationVerifySuccessHandler func(*EventQualificationVerifySuccess) ReplyMsg // 资质认证成功
+	EventQualificationVerifyFailHandler    func(*EventQualificationVerifyFail) ReplyMsg    // 资质认证失败
+	EventNamingVerifySuccessHandler        func(*EventNamingVerifySuccess) ReplyMsg        // 名称认证成功（即命名成功）
+	EventNamingVerifyFailHandler           func(*EventNamingVerifyFail) ReplyMsg           // 名称认证失败
+	EventAnnualRenewHandler                func(*EventAnnualRenew) ReplyMsg                // 年审通知
+	EventVerifyExpiredHandler              func(*EventVerifyExpired) ReplyMsg              // 认证过期失效通知
 )
 
 // RecvDefaultHandler 如果没有注册某类消息处理器，那么收到这类消息时，使用这个默认处理器
@@ -112,6 +120,54 @@ func HandleEvent(msg *Message) (reply ReplyMsg) {
 	case EventTypeTemplateSendJobFinish:
 		if EventTemplateSendJobFinishHandler != nil {
 			return EventTemplateSendJobFinishHandler(NewEventTemplateSendJobFinish(msg))
+		}
+	case EventTypeScancodePush:
+		if EventScancodePushHandler != nil {
+			return EventScancodePushHandler(NewEventScancodePush(msg))
+		}
+	case EventTypeScancodeWaitmsg:
+		if EventScancodeWaitmsgHandler != nil {
+			return EventScancodeWaitmsgHandler(NewEventScancodeWaitmsg(msg))
+		}
+	case EventTypePicSysphoto:
+		if EventPicSysphotoHandler != nil {
+			return EventPicSysphotoHandler(NewEventPicSysphoto(msg))
+		}
+	case EventTypePicPhotoOrAlbum:
+		if EventPicPhotoOrAlbumHandler != nil {
+			return EventPicPhotoOrAlbumHandler(NewEventPicPhotoOrAlbum(msg))
+		}
+	case EventTypePicWeixin:
+		if EventPicWeixinHandler != nil {
+			return EventPicWeixinHandler(NewEventPicWeixin(msg))
+		}
+	case EventTypeLocationSelect:
+		if EventLocationSelectHandler != nil {
+			return EventLocationSelectHandler(NewEventLocationSelect(msg))
+		}
+	case EventTypeQualificationVerifySuccess:
+		if EventQualificationVerifySuccessHandler != nil {
+			return EventQualificationVerifySuccessHandler(NewEventQualificationVerifySuccess(msg))
+		}
+	case EventTypeQualificationVerifyFail:
+		if EventQualificationVerifyFailHandler != nil {
+			return EventQualificationVerifyFailHandler(NewEventQualificationVerifyFail(msg))
+		}
+	case EventTypeNamingVerifySuccess:
+		if EventNamingVerifySuccessHandler != nil {
+			return EventNamingVerifySuccessHandler(NewEventNamingVerifySuccess(msg))
+		}
+	case EventTypeNamingVerifyFail:
+		if EventNamingVerifyFailHandler != nil {
+			return EventNamingVerifyFailHandler(NewEventNamingVerifyFail(msg))
+		}
+	case EventTypeAnnualRenew:
+		if EventAnnualRenewHandler != nil {
+			return EventAnnualRenewHandler(NewEventAnnualRenew(msg))
+		}
+	case EventTypeVerifyExpired:
+		if EventVerifyExpiredHandler != nil {
+			return EventVerifyExpiredHandler(NewEventVerifyExpired(msg))
 		}
 	default:
 		log.Errorf("unexpected receive EventType: %s", msg.Event)
