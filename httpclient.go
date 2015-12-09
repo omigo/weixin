@@ -120,7 +120,7 @@ func PostUnmarshal(url string, js []byte, ret interface{}) (err error) {
 }
 
 // Upload 工具类, 上传文件
-func Upload(url, fieldName string, file *os.File, ret interface{}) (err error) {
+func Upload(url, fieldName string, file *os.File, ret interface{}, desc ...string) (err error) {
 	buf := &bytes.Buffer{}
 	w := multipart.NewWriter(buf)
 
@@ -135,6 +135,9 @@ func Upload(url, fieldName string, file *os.File, ret interface{}) (err error) {
 		return err
 	}
 	contentType := w.FormDataContentType()
+	if len(desc) > 0 {
+		w.WriteField("description", desc[0])
+	}
 	w.Close()
 
 	log.Debugf("url=%s, fieldName=%s, fileName=%s", url, fieldName, file.Name())
