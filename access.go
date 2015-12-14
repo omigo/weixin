@@ -49,8 +49,20 @@ func processMessage(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "read body error", http.StatusNotAcceptable)
 		return
 	}
-	r.Body.Close()
 	log.Debugf("from weixin: %s", body)
+
+	// r.Body.Close() 这里是服务端，不需要主动调用关闭方法，http.Request.Body 有如下注释：
+	//
+	// Body is the request's body.
+	//
+	// For client requests a nil body means the request has no
+	// body, such as a GET request. The HTTP Client's Transport
+	// is responsible for calling the Close method.
+	//
+	// For server requests the Request Body is always non-nil
+	// but will return EOF immediately when no body is present.
+	// The Server will close the request body. The ServeHTTP
+	// Handler does not need to.
 
 	msg, err := parseBody(encryptType, timestamp, nonce, msgSignature, body)
 	if err != nil {
