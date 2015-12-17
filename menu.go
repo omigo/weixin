@@ -62,14 +62,18 @@ const (
 
 )
 
-// Outter 查询菜单时外层包装 JSON
-type Outter struct {
-	Menu Menu `json:"menu"`
-}
-
-// Menu 菜单
-type Menu struct {
-	Button []Button `json:"button"`
+// AllMenu 自定义菜单
+type AllMenu struct {
+	WeixinError
+	Menu struct {
+		Button []Button `json:"button"`
+		MenuId int      `json:"menuid"` // 菜单 id
+	} `json:"menu"`
+	ConditionalMenu struct {
+		Button    []Button  `json:"button"`
+		MenuId    int       `json:"menuid"`    // 菜单 id
+		MatchRule MatchRule `json:"matchrule"` // 菜单匹配规则
+	} `json:"conditionalmenu"`
 }
 
 // Button 菜单上的按钮
@@ -92,20 +96,24 @@ func CreateMenu(buttons []Button) (err error) {
 		}
 	}
 
+	menu := struct {
+		Button []Button `json:"button"`
+	}{buttons}
+
 	url := fmt.Sprintf(MenuCreateURL, AccessToken())
-	err = PostMarshal(url, Menu{buttons})
+	err = PostMarshal(url, menu)
 	return err
 }
 
 // GetMenu 查询菜单
-func GetMenu() (buttons []Button, err error) {
+func GetMenu() (all *AllMenu, err error) {
 	url := fmt.Sprintf(MenuGetURL, AccessToken())
-	outter := &Outter{}
-	err = GetUnmarshal(url, outter)
+	all = &AllMenu{}
+	err = GetUnmarshal(url, all)
 	if err != nil {
 		return nil, err
 	}
-	return outter.Menu.Button, nil
+	return all, nil
 }
 
 // DeleteMenu 删除菜单

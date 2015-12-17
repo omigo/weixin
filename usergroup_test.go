@@ -46,7 +46,7 @@ func TestGetGroupIdByOpenId(t *testing.T) {
 }
 
 func TestUpdateMemberGroup(t *testing.T) {
-	err := UpdateMemberGroup("ozmLcjnM7vnrXmb3DimFLi0EOiY8", 100)
+	err := UpdateMemberGroup("ozmLcjnM7vnrXmb3DimFLi0EOiY8", 102)
 
 	if err != nil {
 		t.Log(err)

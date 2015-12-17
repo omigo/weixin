@@ -63,7 +63,7 @@ func PostMarshal(url string, v interface{}) (err error) {
 	// if wxerr.ErrCode == WeixinErrCodeSystemBusy {
 	//
 	// }
-	log.Errorf("weixin error %d: %s", wxerr.ErrCode, wxerr.ErrMsg)
+	// log.Errorf("weixin error %d: %s", wxerr.ErrCode, wxerr.ErrMsg)
 	return wxerr
 }
 
