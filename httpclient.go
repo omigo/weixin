@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"encoding/json"
 	"io"
-	"io/ioutil"
 	"mime/multipart"
 	"net/http"
 	"os"
@@ -21,13 +20,7 @@ func GetUnmarshal(url string, ret interface{}) (err error) {
 	}
 	defer resp.Body.Close()
 
-	body, err := ioutil.ReadAll(resp.Body)
-	if err != nil {
-		return err
-	}
-	log.Debugf("response: %s", body)
-
-	err = json.Unmarshal(body, ret)
+	err = json.NewDecoder(resp.Body).Decode(ret)
 	if err != nil {
 		return err
 	}
@@ -105,13 +98,7 @@ func PostUnmarshal(url string, js []byte, ret interface{}) (err error) {
 	}
 	defer resp.Body.Close()
 
-	body, err := ioutil.ReadAll(resp.Body)
-	if err != nil {
-		return err
-	}
-	log.Debugf("response: %s", body)
-
-	err = json.Unmarshal(body, ret)
+	err = json.NewDecoder(resp.Body).Decode(ret)
 	if err != nil {
 		return err
 	}
@@ -147,13 +134,7 @@ func Upload(url, fieldName string, file *os.File, ret interface{}, desc ...strin
 	}
 	defer resp.Body.Close()
 
-	body, err := ioutil.ReadAll(resp.Body)
-	if err != nil {
-		return err
-	}
-	log.Debugf("response: %s", body)
-
-	err = json.Unmarshal(body, ret)
+	err = json.NewDecoder(resp.Body).Decode(ret)
 	if err != nil {
 		return err
 	}
