@@ -1,6 +1,6 @@
 package weixin
 
-import "github.com/omigo/log"
+import "github.com/gotips/log"
 
 // RecvMsg 用户消息
 type RecvMsg interface{}

@@ -7,7 +7,7 @@ import (
 	"encoding/base64"
 	"fmt"
 
-	"github.com/omigo/log"
+	"github.com/gotips/log"
 )
 
 // EncryptMsg 加密报文

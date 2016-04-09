@@ -1,6 +1,6 @@
 package weixin
 
-import "github.com/omigo/log"
+import "github.com/gotips/log"
 
 // 各类消息处理器
 var (

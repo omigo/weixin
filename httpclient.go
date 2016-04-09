@@ -8,7 +8,7 @@ import (
 	"net/http"
 	"os"
 
-	"github.com/omigo/log"
+	"github.com/gotips/log"
 )
 
 // GetUnmarshal 工具类, Get 并解析返回的报文，返回 error
@@ -28,7 +28,6 @@ func GetUnmarshal(url string, ret interface{}) (err error) {
 	if wxerrer, ok := ret.(WeixinErrorer); ok {
 		wxerr := wxerrer.GetWeixinError()
 		if wxerr.ErrCode != WeixinErrCodeSuccess {
-			ret = nil
 			return wxerr
 		}
 	}
@@ -142,7 +141,6 @@ func Upload(url, fieldName string, file *os.File, ret interface{}, desc ...strin
 	if wxerrer, ok := ret.(WeixinErrorer); ok {
 		wxerr := wxerrer.GetWeixinError()
 		if wxerr.ErrCode != WeixinErrCodeSuccess {
-			ret = nil
 			return wxerr
 		}
 	}

@@ -7,7 +7,7 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/omigo/log"
+	"github.com/gotips/log"
 )
 
 const (

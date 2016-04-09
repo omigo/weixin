@@ -1,6 +1,6 @@
 package weixin
 
-import "github.com/omigo/log"
+import "github.com/gotips/log"
 
 // EventType 事件类型
 type EventType string

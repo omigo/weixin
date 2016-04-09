@@ -3,8 +3,8 @@ package main
 import (
 	"encoding/json"
 
-	"github.com/omigo/log"
-	"github.com/omigo/weixin"
+	"github.com/gotips/log"
+	"github.com/arstd/weixin"
 )
 
 func defaultHandler(msg *weixin.Message) weixin.ReplyMsg {

@@ -5,7 +5,7 @@ import (
 	"os"
 	"regexp"
 
-	"github.com/omigo/log"
+	"github.com/gotips/log"
 )
 
 // TConfig 配置

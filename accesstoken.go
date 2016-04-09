@@ -8,7 +8,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/omigo/log"
+	"github.com/gotips/log"
 )
 
 // tick := time.Tick(7 * time.Second)
