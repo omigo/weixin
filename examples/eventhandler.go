@@ -3,8 +3,8 @@ package main
 import (
 	"fmt"
 
-	"github.com/omigo/log"
-	"github.com/omigo/weixin"
+	"github.com/gotips/log"
+	"github.com/arstd/weixin"
 )
 
 // EventDefaultHandler 注册默认处理器

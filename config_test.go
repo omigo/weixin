@@ -1,6 +1,10 @@
 package weixin
 
-import "time"
+import (
+	"time"
+
+	"github.com/gotips/log"
+)
 
 // 微信公众平台测试号
 // http://mp.weixin.qq.com/debug/cgi-bin/sandboxinfo?action=showinfo&t=sandbox/index
@@ -18,5 +22,6 @@ const testURL = "http://127.0.0.1:3080/weixin?signature=292ea5c2b515b3615eecca12
 
 func init() {
 	Initialize(originId, appId, appSecret, token, encodingAESKey)
-	time.Sleep(3 * time.Second) // waiting to refresh token
+	log.Info("Initializing, please wait 5 seconds...")
+	time.Sleep(5 * time.Second) // waiting to refresh token
 }

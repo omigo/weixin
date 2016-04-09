@@ -3,8 +3,8 @@ package main
 import (
 	"net/http"
 
-	"github.com/omigo/log"
-	"github.com/omigo/weixin"
+	"github.com/arstd/weixin"
+	"github.com/gotips/log"
 )
 
 func main() {

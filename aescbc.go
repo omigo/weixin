@@ -6,7 +6,7 @@ import (
 	"crypto/cipher"
 	"fmt"
 
-	"github.com/omigo/log"
+	"github.com/gotips/log"
 )
 
 // AESCBCEncrypt 采用 CBC 模式的 AES 加密

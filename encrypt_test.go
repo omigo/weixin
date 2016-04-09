@@ -4,11 +4,11 @@ import (
 	"encoding/base64"
 	"testing"
 
-	"github.com/omigo/log"
+	"github.com/gotips/log"
 )
 
 func TestEncryptMsg(t *testing.T) {
-	log.SetOutputLevel(log.Ltrace)
+	log.SetLevel(log.TraceLevel)
 
 	appId := "wxfabf18ec7ccd2d1a"
 	aesKey, _ := base64.StdEncoding.DecodeString("0t37dWsIYg6NsVLgEY1fNuB1rSLyyeQEHOAlIfMhQUV=")
@@ -32,7 +32,7 @@ func TestEncryptMsg(t *testing.T) {
 }
 
 func TestDecryptMsg(t *testing.T) {
-	log.SetOutputLevel(log.Ltrace)
+	log.SetLevel(log.TraceLevel)
 
 	appId := "wxfabf18ec7ccd2d1a"
 	aesKey, _ := base64.StdEncoding.DecodeString("0t37dWsIYg6NsVLgEY1fNuB1rSLyyeQEHOAlIfMhQUV=")
