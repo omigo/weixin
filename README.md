@@ -26,7 +26,7 @@ go run examples/*.go 启动一个 Server
 
 ### 如何本地调试微信公众号？
 
-[参考 Bebug-weixin-locally.md](Bebug-weixin-locally.md)
+[参考 Debug-weixin-locally.md](Debug-weixin-locally.md)
 
 
 ### 测试公众号
