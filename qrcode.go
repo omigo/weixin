@@ -25,7 +25,7 @@ func CreateTemporaryQRCodeTicket(sceneId int, expireSeconds ...int) (ticket *QRC
 	} else if expireSeconds[0] >= 2592000 || expireSeconds[0] < 0 {
 		expireSeconds[0] = 2592000
 	}
-	body := fmt.Sprintf(`{"expire_seconds": %d, "action_name": "QR_SCENE", "action_info": {"scene": {"scene_str": %d}}}`, expireSeconds[0], sceneId)
+	body := fmt.Sprintf(`{"expire_seconds": %d, "action_name": "QR_SCENE", "action_info": {"scene": {"scene_id": %d}}}`, expireSeconds[0], sceneId)
 	return createQRCodeTicket(body)
 }
 
