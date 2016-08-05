@@ -9,7 +9,9 @@
 
 ngrok 用法：
 
-1. 下载 ngrok 客户端 `http://pan.baidu.com/s/1bnwROLL`
+1. 下载 ngrok 1.7（注意不是 ngrok 2） 客户端 
+    
+    链接: https://pan.baidu.com/s/1nvF9bKl 密码: bryg
 
 2. 创建配置文件 ngrok.cfg，内容如下：
 
