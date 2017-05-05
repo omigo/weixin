@@ -5,7 +5,7 @@ import (
 	"os"
 	"regexp"
 
-	"github.com/gotips/log"
+	"github.com/arstd/log"
 )
 
 // TConfig 配置

@@ -3,7 +3,7 @@ package weixin
 import (
 	"time"
 
-	"github.com/gotips/log"
+	"github.com/arstd/log"
 )
 
 // 微信公众平台测试号

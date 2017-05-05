@@ -3,7 +3,7 @@ package main
 import (
 	"encoding/json"
 
-	"github.com/gotips/log"
+	"github.com/arstd/log"
 	"github.com/arstd/weixin"
 )
 

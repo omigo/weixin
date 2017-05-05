@@ -4,11 +4,11 @@ import (
 	"encoding/base64"
 	"testing"
 
-	"github.com/gotips/log"
+	"github.com/arstd/log"
 )
 
 func TestEncryptMsg(t *testing.T) {
-	log.SetLevel(log.TraceLevel)
+	log.SetLevel(log.Ltrace)
 
 	appId := "wxfabf18ec7ccd2d1a"
 	aesKey, _ := base64.StdEncoding.DecodeString("0t37dWsIYg6NsVLgEY1fNuB1rSLyyeQEHOAlIfMhQUV=")
@@ -32,7 +32,7 @@ func TestEncryptMsg(t *testing.T) {
 }
 
 func TestDecryptMsg(t *testing.T) {
-	log.SetLevel(log.TraceLevel)
+	log.SetLevel(log.Ltrace)
 
 	appId := "wxfabf18ec7ccd2d1a"
 	aesKey, _ := base64.StdEncoding.DecodeString("0t37dWsIYg6NsVLgEY1fNuB1rSLyyeQEHOAlIfMhQUV=")

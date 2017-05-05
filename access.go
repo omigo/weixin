@@ -6,7 +6,7 @@ import (
 	"io/ioutil"
 	"net/http"
 )
-import "github.com/gotips/log"
+import "github.com/arstd/log"
 
 // HandleAccess 接入微信公众平台开发，并接口来自微信服务器的消息
 func HandleAccess(w http.ResponseWriter, r *http.Request) {
@@ -61,17 +61,17 @@ func processMessage(w http.ResponseWriter, r *http.Request) {
 	// 处理消息
 	reply := HandleMessage(msg)
 
-	// 如果返回为 nil，表示不需要回复，结束
-	if reply == nil {
-		return
-	}
+	// 如果返回为 nil，则默认返回""
+	ret := []byte("")
 
-	// 如果返回不为 nil，表示需要回复
-	ret, err := packReply(reply, encryptType, timestamp, nonce)
-	if err != nil {
-		log.Error(err)
-		http.Error(w, err.Error(), http.StatusBadRequest)
-		return
+	if reply != nil {
+		// 如果返回不为 nil，表示需要回复
+		ret, err = packReply(reply, encryptType, timestamp, nonce)
+		if err != nil {
+			log.Error(err)
+			http.Error(w, err.Error(), http.StatusBadRequest)
+			return
+		}
 	}
 
 	log.Debugf("to weixin: %s", ret)
