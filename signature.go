@@ -6,7 +6,7 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/gotips/log"
+	"github.com/arstd/log"
 )
 
 // ValidateURL 验证 URL 以判断来源是否合法

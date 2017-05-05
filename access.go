@@ -6,7 +6,7 @@ import (
 	"io/ioutil"
 	"net/http"
 )
-import "github.com/gotips/log"
+import "github.com/arstd/log"
 
 // HandleAccess 接入微信公众平台开发，并接口来自微信服务器的消息
 func HandleAccess(w http.ResponseWriter, r *http.Request) {

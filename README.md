@@ -8,14 +8,12 @@ Golang 实现的微信公众号接口
 ```bash
 go get -u -v github.com/arstd/weixin
 ```
-源码位于 $GOPATH/src/github.com/arstd/weixin
-
 
 ### Test
 
 ```bash
 cd $GOPATH/src/github.com/arstd/weixin
-# go get ./... # 依赖于 gotips/log
+# go get ./... # 依赖于 arstd/log
 go test ./... 执行所有单元测试
 go run examples/*.go 启动一个 Server
 ```

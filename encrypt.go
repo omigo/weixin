@@ -7,7 +7,7 @@ import (
 	"encoding/base64"
 	"fmt"
 
-	"github.com/gotips/log"
+	"github.com/arstd/log"
 )
 
 // EncryptMsg 加密报文
