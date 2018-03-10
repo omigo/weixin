@@ -19,7 +19,7 @@ const (
 func UpdateUserRemark(openId, remark string) (err error) {
 	url := fmt.Sprintf(UserInfoUpdateRemarkURL, AccessToken())
 	body := fmt.Sprintf(`{"openid":"%s","remark":"%s"}`, openId, remark)
-	return Post(url, []byte(body))
+	return Post(url, []byte(body), nil)
 }
 
 // Lang 国家地区语言版本
@@ -34,7 +34,7 @@ const (
 
 // UserInfo 用户基本信息
 type UserInfo struct {
-	WeixinError
+	WXError
 	Subscribe     int    `json:"subscribe"`
 	OpenId        string `json:"openid"`
 	NickName      string `json:"nickname"`
@@ -56,14 +56,9 @@ func GetUserInfo(openId string, lang ...Lang) (info *UserInfo, err error) {
 		lang = []Lang{LangZHCN}
 	}
 	url := fmt.Sprintf(UserInfoGetUserInfoURL, AccessToken(), openId, lang[0])
-
 	info = &UserInfo{}
-	err = GetUnmarshal(url, info)
-	if err != nil {
-		return nil, err
-	}
-
-	return info, nil
+	err = Get(url, info)
+	return info, err
 }
 
 // BatchGetUserInfo 获取用户基本信息（包括UnionID机制）
@@ -84,15 +79,11 @@ func BatchGetUserInfo(openIds []string, lang ...Lang) (infos []UserInfo, err err
 	t.Execute(&buf, openIds)
 
 	wrapper := &struct {
-		WeixinError
+		WXError
 		UserInfoList []UserInfo `json:"user_info_list"`
 	}{}
-	err = PostUnmarshal(url, buf.Bytes(), wrapper)
-	if err != nil {
-		return nil, err
-	}
-
-	return wrapper.UserInfoList, nil
+	err = Post(url, buf.Bytes(), wrapper)
+	return wrapper.UserInfoList, err
 }
 
 // GetUserList 获取用户列表。第一个拉取的OPENID，nextOpenId 不填默认从头开始拉取
@@ -103,6 +94,7 @@ func GetUserList(fromOpenId ...string) (openIds []string, total, count int, next
 	url := fmt.Sprintf(UserInfoGetUserListURL, AccessToken(), fromOpenId[0])
 
 	wrapper := &struct {
+		WXError
 		Total      int    `json:"total"`
 		Count      int    `json:"count"`
 		NextOpenId string `json:"next_openid"`
@@ -110,10 +102,6 @@ func GetUserList(fromOpenId ...string) (openIds []string, total, count int, next
 			OpenIds []string `json:"openid"`
 		} `json:"data"`
 	}{}
-	err = GetUnmarshal(url, wrapper)
-	if err != nil {
-		return nil, 0, 0, "", err
-	}
-
-	return wrapper.Data.OpenIds, wrapper.Total, wrapper.Count, wrapper.NextOpenId, nil
+	err = Get(url, wrapper)
+	return wrapper.Data.OpenIds, wrapper.Total, wrapper.Count, wrapper.NextOpenId, err
 }

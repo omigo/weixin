@@ -11,10 +11,10 @@ const (
 func LongURL2Short(longURL string) (shortURL string, err error) {
 	js := fmt.Sprintf(`{"action":"long2short","long_url":"%s"}`, longURL)
 	wapper := &struct {
-		WeixinError
+		WXError
 		ShortURL string `json:"short_url"`
 	}{}
 	url := fmt.Sprintf(ShortURLLongURL2ShortURL, AccessToken())
-	err = PostUnmarshal(url, []byte(js), wapper)
+	err = Post(url, []byte(js), wapper)
 	return wapper.ShortURL, err
 }

@@ -4,9 +4,6 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"io/ioutil"
-	"mime"
-	"net/http"
 	"os"
 )
 
@@ -39,6 +36,7 @@ const (
 func UploadTemporaryMaterial(mtype MediaType, file *os.File) (mediaId string, createAt int, err error) {
 	url := fmt.Sprintf(MaterialUploadTemporaryURL, AccessToken(), mtype)
 	wapper := &struct {
+		WXError
 		Type     MediaType `json:"type"`
 		MediaId  string    `json:"media_id"`
 		CreateAt int       `json:"created_at"`
@@ -50,44 +48,7 @@ func UploadTemporaryMaterial(mtype MediaType, file *os.File) (mediaId string, cr
 // GetTemporaryMaterial 新增临时素材
 func GetTemporaryMaterial(mediaId string) (filename string, body []byte, err error) {
 	url := fmt.Sprintf(MaterialGetTemporaryURL, AccessToken(), mediaId)
-	resp, err := http.Get(url)
-	if err != nil {
-		return "", nil, err
-	}
-	defer resp.Body.Close()
-
-	params := make(map[string]string)
-	if cd := resp.Header.Get("Content-Disposition"); cd == "" {
-		return "", nil, errors.New("missing Content-Disposition header")
-	} else if _, params, err = mime.ParseMediaType(cd); err != nil {
-		return "", nil, fmt.Errorf("parse Content-Disposition header fail: %s", err.Error())
-	} else if filename = params["filename"]; filename == "" {
-		return "", nil, errors.New("no filename in Content-Disposition header")
-	}
-
-	// // 取文件名
-	// disp := resp.Header.Get("Content-Disposition")
-	// re := regexp.MustCompile(`filename="(.+?)"`)
-	// matched := re.FindStringSubmatch(disp)
-	// if len(matched) != 2 {
-	// 	filename = mediaId
-	// } else {
-	// 	filename = matched[1]
-	// }
-
-	body, err = ioutil.ReadAll(resp.Body)
-	if err != nil {
-		return "", nil, err
-	}
-	if resp.StatusCode != http.StatusOK {
-		wxerr := &WeixinError{}
-		err = json.Unmarshal(body, wxerr)
-		if err != nil {
-			return "", nil, err
-		}
-		return "", nil, wxerr
-	}
-	return filename, body, nil
+	return Download(url)
 }
 
 // Article 永久图文素材
@@ -116,11 +77,10 @@ func AddNews(as []Article) (mediaId string, err error) {
 	body := fmt.Sprintf(`{"articles":%s}`, js)
 	url := fmt.Sprintf(MaterialAddNewsURL, AccessToken())
 	wrapper := &struct {
-		WeixinError
+		WXError
 		MediaId string `json:"media_id"`
 	}{}
-	err = PostUnmarshal(url, []byte(body), wrapper)
-
+	err = Post(url, []byte(body), wrapper)
 	return wrapper.MediaId, err
 }
 
@@ -128,7 +88,7 @@ func AddNews(as []Article) (mediaId string, err error) {
 func UploadImg(file *os.File) (u string, err error) {
 	url := fmt.Sprintf(MaterialUploadImg, AccessToken())
 	wapper := &struct {
-		WeixinError
+		WXError
 		URL string `json:"url"`
 	}{}
 	err = Upload(url, "media", file, wapper)
@@ -139,7 +99,7 @@ func UploadImg(file *os.File) (u string, err error) {
 func UploadNews(mtype MediaType, file *os.File) (mediaId, u string, err error) {
 	url := fmt.Sprintf(MaterialUploadNewsURL, AccessToken(), mtype)
 	wapper := &struct {
-		WeixinError
+		WXError
 		MediaId string `json:"media_id"`
 		URL     string `json:"url"`
 	}{}
@@ -151,7 +111,7 @@ func UploadNews(mtype MediaType, file *os.File) (mediaId, u string, err error) {
 func UploadVideo(mtype MediaType, title, desc string, file *os.File) (mediaId, u string, err error) {
 	url := fmt.Sprintf(MaterialUploadNewsURL, AccessToken(), mtype)
 	wapper := &struct {
-		WeixinError
+		WXError
 		MediaId string `json:"media_id"`
 		URL     string `json:"url"`
 	}{}
@@ -162,6 +122,7 @@ func UploadVideo(mtype MediaType, title, desc string, file *os.File) (mediaId, u
 
 // News 永久素材
 type News struct {
+	WXError
 	Title       string    `json:"title"` // 图文消息的标题
 	Description string    `json:"description"`
 	DownURL     string    `json:"down_url"`
@@ -173,7 +134,7 @@ func GetNews(mediaId string) (ret *News, err error) {
 	url := fmt.Sprintf(MaterialGetNewsURL, AccessToken())
 	body := fmt.Sprintf(`{"media_id":"%s"}`, mediaId)
 	ret = &News{}
-	err = PostUnmarshal(url, []byte(body), ret)
+	err = Post(url, []byte(body), ret)
 	return ret, err
 }
 
@@ -181,12 +142,7 @@ func GetNews(mediaId string) (ret *News, err error) {
 func DeleteNews(mediaId string) (err error) {
 	url := fmt.Sprintf(MaterialDeleteNewsURL, AccessToken())
 	body := fmt.Sprintf(`{"media_id":"%s"}`, mediaId)
-	wxerr := &WeixinError{}
-	err = PostUnmarshal(url, []byte(body), wxerr)
-	if err != nil {
-		return err
-	}
-	return nil
+	return Post(url, []byte(body), nil)
 }
 
 // UpdateNewsReq 修改永久图文素材
@@ -199,17 +155,12 @@ type UpdateNewsReq struct {
 // UpdateNews 修改永久图文素材
 func UpdateNews(news *UpdateNewsReq) (err error) {
 	url := fmt.Sprintf(MaterialDeleteNewsURL, AccessToken())
-	wxerr := &WeixinError{}
-	err = PostMarshalUnmarshal(url, news, wxerr)
-	if err != nil {
-		return err
-	}
-	return nil
+	return Post(url, news, nil)
 }
 
 // MaterialCount 素材总数
 type MaterialCount struct {
-	WeixinError
+	WXError
 	VoiceCount int `json:"voice_count"` // 语音总数量
 	VideoCount int `json:"video_count"` // 视频总数量
 	ImageCount int `json:"image_count"` // 图片总数量
@@ -220,13 +171,13 @@ type MaterialCount struct {
 func GetMaterialCount() (mc *MaterialCount, err error) {
 	url := fmt.Sprintf(MaterialCountURL, AccessToken())
 	mc = &MaterialCount{}
-	err = GetUnmarshal(url, mc)
+	err = Get(url, mc)
 	return mc, err
 }
 
 // NewsList 素材列表
 type NewsList struct {
-	WeixinError
+	WXError
 	TotalCount string `json:"total_count"` // 该类型的素材的总数
 	ItemCount  string `json:"item_count"`  // 本次调用获取的素材的数量
 	Item       []struct {
@@ -245,6 +196,6 @@ func BatchGetNews(mtype MediaType, offset int, count int) (ret *NewsList, err er
 	url := fmt.Sprintf(MaterialBatchGetNewsURL, AccessToken())
 	body := fmt.Sprintf(`{"type":%s,"offset":%d,"count":%d}`, mtype, offset, count)
 	ret = &NewsList{}
-	err = PostUnmarshal(url, []byte(body), ret)
+	err = Post(url, []byte(body), ret)
 	return ret, err
 }

@@ -38,7 +38,7 @@ func GenRedirectURL(redirectURL string, scope ScopeSNSAPI, state ...string) stri
 
 // WebToken 网页授权access_token
 type WebToken struct {
-	WeixinError
+	WXError
 	AccessToken  string `json:"access_token"`      // 网页授权接口调用凭证,注意：此access_token与基础支持的access_token不同
 	ExpiresIn    int    `json:"expires_in"`        // access_token接口调用凭证超时时间，单位（秒）
 	RefreshToken string `json:"refresh_token"`     // 用户刷新access_token
@@ -51,7 +51,7 @@ type WebToken struct {
 func GetWebToken(code string) (token *WebToken, err error) {
 	url := fmt.Sprintf(UserWebWebTokenURL, AppId, AppSecret, code)
 	token = &WebToken{}
-	err = GetUnmarshal(url, token)
+	err = Get(url, token)
 	return token, err
 }
 
@@ -59,13 +59,13 @@ func GetWebToken(code string) (token *WebToken, err error) {
 func RefreshWebToken(refreshToken string) (token *WebToken, err error) {
 	url := fmt.Sprintf(UserWebRefreshTokenURL, AppId, refreshToken)
 	token = &WebToken{}
-	err = GetUnmarshal(url, token)
-	return token, nil
+	err = Get(url, token)
+	return token, err
 }
 
 //WebUserInfo 网页授权获取用户基本信息
 type WebUserInfo struct {
-	WeixinError
+	WXError
 	OpenId   string `json:"openid"`   // 用户的唯一标识
 	NickName string `json:"nickname"` // 用户昵称
 	Sex      int    `json:"sex"`      // 用户的性别，值为1时是男性，值为2时是女性，值为0时是未知
@@ -87,14 +87,13 @@ func GetWebUserInfo(webToken, openId string, lang ...Lang) (info *WebUserInfo, e
 	}
 	url := fmt.Sprintf(UserWebGetWebUserInfoURL, webToken, openId, lang[0])
 	info = &WebUserInfo{}
-	err = GetUnmarshal(url, info)
+	err = Get(url, info)
 	return info, err
 }
 
 // CheckWebToken 检验网页授权凭证（access_token）是否有效
 func CheckWebToken(webToken, openId string) (err error) {
 	url := fmt.Sprintf(UserWebCheckWebTokenURL, webToken, openId)
-	wxerr := &WeixinError{}
-	err = GetUnmarshal(url, wxerr)
-	return wxerr
+	err = Get(url, nil)
+	return err
 }

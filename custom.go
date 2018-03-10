@@ -3,8 +3,6 @@ package weixin
 import (
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
-	"net/http"
 	"os"
 )
 
@@ -64,26 +62,19 @@ func DeleteCustomStruct(cust *Custom) (err error) {
 
 // operateCustomStruct 客服帐号
 func operateCustomStruct(url string, cust *Custom) (err error) {
-	jsonBytes, err := json.Marshal(cust)
-	if err != nil {
-		return err
-	}
-
-	err = Post(url, jsonBytes)
-	return err
+	return Post(url, cust, nil)
 }
 
 // UploadHeading 设置客服帐号的头像
 func UploadHeading(account string, file *os.File) (err error) {
 	url := fmt.Sprintf(CustomHeadingURL, AccessToken(), account)
-	wxerr := &WeixinError{} // 忽略返回
-	return Upload(url, file.Name(), file, wxerr)
+	return Upload(url, file.Name(), file, nil)
 }
 
 // CustomList 客服列表
 type CustomList struct {
-	WeixinError
-	List []Account `json:"kf_list"`
+	WXError
+	List []*Account `json:"kf_list"`
 }
 
 // Account 客服账号
@@ -95,29 +86,11 @@ type Account struct {
 }
 
 // GetCustomList 获取所有客服账号
-func GetCustomList() (accs []Account, err error) {
+func GetCustomList() (accs []*Account, err error) {
 	url := fmt.Sprintf(CustomListURL, AccessToken())
-	resp, err := http.Get(url)
-	if err != nil {
-		return nil, err
-	}
-
-	body, err := ioutil.ReadAll(resp.Body)
-	if err != nil {
-		return nil, err
-	}
-
 	list := &CustomList{}
-	err = json.Unmarshal(body, list)
-	if err != nil {
-		return nil, err
-	}
-
-	if list.ErrCode != WeixinErrCodeSuccess {
-		return nil, list
-	}
-
-	return list.List, nil
+	err = Get(url, list)
+	return list.List, err
 }
 
 // CustMsg 客服消息接口
@@ -199,7 +172,5 @@ func SendCustomMsg(openId string, msg CustMsg) (err error) {
 		openId, msgType, msgType, js)
 
 	url := fmt.Sprintf(CustomMsgURL, AccessToken())
-	err = Post(url, []byte(jsonStr))
-
-	return err
+	return Post(url, []byte(jsonStr), nil)
 }

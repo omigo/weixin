@@ -48,9 +48,10 @@ func CreateConditionalMenu(cm *ConditionalMenu) (menuId string, err error) {
 	url := fmt.Sprintf(MenuCreateConditionalURL, AccessToken())
 
 	wapper := &struct {
+		WXError
 		MenuId string `json:"menuid"`
 	}{}
-	err = PostMarshalUnmarshal(url, cm, wapper)
+	err = Post(url, cm, wapper)
 	return wapper.MenuId, err
 }
 
@@ -58,8 +59,7 @@ func CreateConditionalMenu(cm *ConditionalMenu) (menuId string, err error) {
 func DeleteConditionalMenu(menuId int) (err error) {
 	url := fmt.Sprintf(MenuDeleteConditionalURL, AccessToken())
 	js := fmt.Sprintf(`{"menuid":"%d"}`, menuId)
-	err = Post(url, []byte(js))
-	return err
+	return Post(url, []byte(js), nil)
 }
 
 // TryMatchConditionalMenu 测试个性化菜单匹配结果，userId 可以是粉丝的 OpenID，也可以是粉丝的微信号
@@ -68,8 +68,9 @@ func TryMatchConditionalMenu(userId string) (buttons []Button, err error) {
 	js := fmt.Sprintf(`{"user_id":"%s"}`, userId)
 
 	wapper := &struct {
+		WXError
 		Button []Button `json:"button"`
 	}{}
-	err = PostUnmarshal(url, []byte(js), wapper)
+	err = Post(url, []byte(js), wapper)
 	return wapper.Button, err
 }

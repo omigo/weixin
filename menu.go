@@ -64,7 +64,7 @@ const (
 
 // AllMenu 自定义菜单
 type AllMenu struct {
-	WeixinError
+	WXError
 	Menu struct {
 		Button []Button `json:"button"`
 		MenuId int      `json:"menuid"` // 菜单 id
@@ -101,45 +101,34 @@ func CreateMenu(buttons []Button) (err error) {
 	}{buttons}
 
 	url := fmt.Sprintf(MenuCreateURL, AccessToken())
-	err = PostMarshal(url, menu)
-	return err
+	return Post(url, menu, nil)
 }
 
 // GetMenu 查询菜单
 func GetMenu() (all *AllMenu, err error) {
 	url := fmt.Sprintf(MenuGetURL, AccessToken())
 	all = &AllMenu{}
-	err = GetUnmarshal(url, all)
-	if err != nil {
-		return nil, err
-	}
-	return all, nil
+	err = Get(url, all)
+	return all, err
 }
 
 // DeleteMenu 删除菜单
 func DeleteMenu() (err error) {
 	url := fmt.Sprintf(MenuDeleteURL, AccessToken())
-	wxerr := &WeixinError{}
-	err = GetUnmarshal(url, wxerr)
-	if err != nil {
-		return err
-	}
-	return wxerr
+	return Get(url, nil)
 }
 
 // GetMenuInfo 获取自定义菜单配置
 func GetMenuInfo() (mi *MenuInfo, err error) {
 	url := fmt.Sprintf(MenuInfoURL, AccessToken())
 	mi = &MenuInfo{}
-	err = GetUnmarshal(url, mi)
-	if err != nil {
-		return nil, err
-	}
+	err = Get(url, mi)
 	return mi, err
 }
 
 // MenuInfo 自定义菜单配置
 type MenuInfo struct {
+	WXError
 	IsMenuOpen   int `json:"is_menu_open"` // 菜单是否开启，0代表未开启，1代表开启
 	SelfmenuInfo struct {
 		Button []struct {

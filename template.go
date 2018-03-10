@@ -59,13 +59,12 @@ IT科技	网络游戏	6
 func SetIndustry(primary, secondary int) error {
 	url := fmt.Sprintf(TamplateSetIndustryURL, AccessToken())
 	body := fmt.Sprintf(`{"industry_id1":"%d","industry_id2":"%d"}`, primary, secondary)
-
-	return Post(url, []byte(body))
+	return Post(url, []byte(body), nil)
 }
 
 // TemplateId 模板ID with Error
 type TemplateId struct {
-	WeixinError
+	WXError
 	TemplateId string `json:"template_id"`
 }
 
@@ -73,14 +72,9 @@ type TemplateId struct {
 func AddTemplate(shortId string) (templateId string, err error) {
 	url := fmt.Sprintf(TemplateAddTemplateURL, AccessToken())
 	js := fmt.Sprintf(`{"template_id_short":"%s"}`, shortId)
-
 	t := &TemplateId{}
-	err = PostUnmarshal(url, []byte(js), t)
-	if err != nil {
-		return "", err
-	}
-
-	return t.TemplateId, nil
+	err = Post(url, []byte(js), t)
+	return t.TemplateId, err
 }
 
 // TemplateMsg 模板消息
@@ -110,19 +104,14 @@ type KeywordPair struct {
 
 // TempplateMsgId 模版消息 Id
 type TempplateMsgId struct {
-	WeixinError
+	WXError
 	MsgId int `json:"msgid"`
 }
 
 // SendTemplateMsg 发送模板消息，返回消息 Id
 func SendTemplateMsg(m *TemplateMsg) (msgId int, err error) {
 	url := fmt.Sprintf(TemplateSendTemplateMsgURL, AccessToken())
-
 	mid := &TempplateMsgId{}
-	err = PostMarshalUnmarshal(url, m, mid)
-	if err != nil {
-		return 0, err
-	}
-
-	return mid.MsgId, nil
+	err = Post(url, m, mid)
+	return mid.MsgId, err
 }
