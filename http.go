@@ -57,8 +57,8 @@ const contentType = "application/json"
 
 // Post HTTP 工具类, POST 并解析返回的报文，如果有错误，返回 error
 func Post(url string, v interface{}, wxr wxResp) (err error) {
-	var js []byte
-	if _, ok := v.([]byte); !ok {
+	js, ok := v.([]byte)
+	if !ok {
 		js, err = json.Marshal(v)
 		if err != nil {
 			return err
