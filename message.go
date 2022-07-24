@@ -57,8 +57,8 @@ type Message struct {
 
 	// voice-语音消息
 	// MediaId string  `xml:",omitempty"`// 语音消息媒体id，可以调用多媒体文件下载接口拉取数据
-	Format       string `xml:",omitempty"` // 语音格式，如amr，speex等
-	Recongnition string `xml:",omitempty"` // 语音识别结果，使用UTF8编码
+	Format      string `xml:",omitempty"` // 语音格式，如amr，speex等
+	Recognition string `xml:",omitempty"` // 语音识别结果，使用UTF8编码
 
 	// video-视频消息，shortvideo-小视频消息
 	// MediaId string `xml:",omitempty"` // 视频消息媒体id，可以调用多媒体文件下载接口拉取数据

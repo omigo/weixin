@@ -85,7 +85,7 @@ type RecvVoice struct {
 	MsgType      MsgType // voice
 	MediaId      string  // 语音消息媒体id，可以调用多媒体文件下载接口拉取数据
 	Format       string  // 语音格式，如amr，speex等
-	Recongnition string  // 语音识别结果，使用UTF8编码
+	Recognition  string  // 语音识别结果，使用UTF8编码
 	MsgId        int     // 消息id，64位整型
 }
 
@@ -98,7 +98,7 @@ func NewRecvVoice(m *Message) *RecvVoice {
 		MsgType:      m.MsgType,
 		MediaId:      m.MediaId,
 		Format:       m.Format,
-		Recongnition: m.Recongnition,
+		Recognition:  m.Recognition,
 		MsgId:        m.MsgId,
 	}
 }
